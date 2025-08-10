@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navigation from "@/components/layout/Navigation";
 import RecordPage from "@/components/pages/RecordPage";
+import LessonsPage from "@/components/pages/LessonsPage";
 import DictionaryPage from "@/components/pages/DictionaryPage";
 import StoriesPage from "@/components/pages/StoriesPage";
 import TutorPage from "@/components/pages/TutorPage";
@@ -13,6 +14,8 @@ const Index = () => {
     switch (activeTab) {
       case "record":
         return <RecordPage />;
+      case "lessons":
+        return <LessonsPage />;
       case "dictionary":
         return <DictionaryPage />;
       case "stories":

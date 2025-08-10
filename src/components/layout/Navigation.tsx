@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mic, Book, FileMusic, MessageCircle, User } from "lucide-react";
+import { Mic, Book, FileMusic, MessageCircle, User, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavigationProps {
@@ -10,6 +10,7 @@ interface NavigationProps {
 const Navigation = ({ activeTab, onTabChange }: NavigationProps) => {
   const tabs = [
     { id: "record", icon: Mic, label: "Record", labelHa: "Yin sauti" },
+    { id: "lessons", icon: GraduationCap, label: "Lessons", labelHa: "Darussai" },
     { id: "dictionary", icon: Book, label: "Dictionary", labelHa: "Kamus" },
     { id: "stories", icon: FileMusic, label: "Stories", labelHa: "Labarai" },
     { id: "tutor", icon: MessageCircle, label: "Tutor", labelHa: "Malami" },

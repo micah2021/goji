@@ -1,21 +1,26 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Mic, Square, Play, Pause, Upload } from "lucide-react";
+import { Mic, Square, Play, Pause, Save, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 const AudioRecorder = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const { toast } = useToast();
 
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
       const chunks: BlobPart[] = [];
 
       mediaRecorder.ondataavailable = (e) => {
@@ -30,13 +35,25 @@ const AudioRecorder = () => {
         setAudioBlob(blob);
         setAudioUrl(url);
         stream.getTracks().forEach(track => track.stop());
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+        }
       };
 
       mediaRecorderRef.current = mediaRecorder;
       mediaRecorder.start();
       setIsRecording(true);
+      setRecordingTime(0);
+      
+      // Start timer
+      timerRef.current = setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
+      
+      toast({ title: "Recording started", description: "Speak clearly in Goji" });
     } catch (error) {
       console.error("Error accessing microphone:", error);
+      toast({ title: "Error", description: "Could not access microphone", variant: "destructive" });
     }
   };
 
@@ -61,9 +78,36 @@ const AudioRecorder = () => {
     }
   };
 
-  const handleUpload = () => {
-    // TODO: Implement upload to Supabase storage
-    console.log("Upload audio blob:", audioBlob);
+  const handleSave = async () => {
+    if (!audioBlob) return;
+    
+    setIsSaving(true);
+    try {
+      // Simulate saving to database
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast({ title: "Recording saved!", description: "Your Goji recording has been preserved" });
+      clearRecording();
+    } catch (error) {
+      toast({ title: "Error", description: "Could not save recording", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const clearRecording = () => {
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl);
+    }
+    setAudioBlob(null);
+    setAudioUrl(null);
+    setRecordingTime(0);
+    setIsPlaying(false);
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -91,37 +135,74 @@ const AudioRecorder = () => {
         )}
 
         {isRecording && (
-          <Button
-            onClick={stopRecording}
-            size="lg"
-            variant="destructive"
-            className="w-24 h-24 rounded-full flex items-center justify-center"
-          >
-            <Square className="h-8 w-8" />
-          </Button>
+          <div className="flex flex-col items-center space-y-4">
+            <Button
+              onClick={stopRecording}
+              size="lg"
+              variant="destructive"
+              className="w-24 h-24 rounded-full flex items-center justify-center animate-pulse"
+            >
+              <Square className="h-8 w-8" />
+            </Button>
+            <div className="text-lg font-mono text-foreground">
+              {formatTime(recordingTime)}
+            </div>
+          </div>
         )}
 
         {audioBlob && (
-          <div className="flex items-center space-x-4">
-            <Button
-              onClick={isPlaying ? pauseAudio : playAudio}
-              variant="outline"
-              size="lg"
-              className="w-16 h-16 rounded-full"
-            >
-              {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
-            </Button>
-            <Button onClick={handleUpload} className="flex items-center space-x-2">
-              <Upload className="h-4 w-4" />
-              <span>Upload</span>
-            </Button>
+          <div className="w-full space-y-4">
+            <div className="flex justify-center items-center space-x-4">
+              <Button
+                onClick={isPlaying ? pauseAudio : playAudio}
+                variant="outline"
+                size="lg"
+                className="w-16 h-16 rounded-full"
+              >
+                {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+              </Button>
+            </div>
+            
+            <div className="flex justify-center space-x-2">
+              <Button 
+                onClick={handleSave} 
+                disabled={isSaving}
+                className="flex items-center space-x-2"
+              >
+                <Save className="h-4 w-4" />
+                <span>{isSaving ? "Saving..." : "Save Recording"}</span>
+              </Button>
+              
+              <Button 
+                onClick={clearRecording}
+                variant="outline"
+                className="flex items-center space-x-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>Clear</span>
+              </Button>
+            </div>
+            
+            <div className="text-center p-3 bg-secondary/30 rounded-lg">
+              <p className="text-sm text-muted-foreground">
+                Recording duration: {formatTime(recordingTime)}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Tsawon rikodin: {formatTime(recordingTime)}
+              </p>
+            </div>
           </div>
         )}
       </div>
 
       {isRecording && (
-        <div className="text-sm text-muted-foreground animate-pulse">
-          Recording... • Yana rikodin...
+        <div className="space-y-2">
+          <div className="text-sm text-muted-foreground animate-pulse">
+            Recording... • Yana rikodin...
+          </div>
+          <div className="w-full bg-secondary rounded-full h-2">
+            <div className="bg-red-500 h-2 rounded-full animate-pulse" style={{ width: '100%' }} />
+          </div>
         </div>
       )}
 

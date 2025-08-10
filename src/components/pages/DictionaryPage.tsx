@@ -1,34 +1,92 @@
-import { useState } from "react";
-import { Search, Plus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Plus, Volume2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+
+interface DictionaryEntry {
+  id: string;
+  goji_text: string;
+  english_translation: string | null;
+  hausa_translation: string | null;
+  category_id: string;
+  audio_data: string | null;
+  goji_categories: {
+    name: string;
+  } | null;
+}
 
 const DictionaryPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [entries, setEntries] = useState<DictionaryEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
-  // Sample data - will be replaced with Supabase data
-  const sampleWords = [
-    {
-      id: 1,
-      goji: "Yako",
-      english: "How are you?",
-      hausa: "Yaya kake?",
-      category: "greetings"
-    },
-    {
-      id: 2,
-      goji: "Lafia",
-      english: "Health/Peace",
-      hausa: "Lafiya",
-      category: "greetings"
-    },
-  ];
+  useEffect(() => {
+    fetchEntries();
+  }, []);
 
-  const filteredWords = sampleWords.filter(word =>
-    word.goji.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    word.english.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    word.hausa.toLowerCase().includes(searchTerm.toLowerCase())
+  const fetchEntries = async () => {
+    try {
+      // Sample data for now - will be replaced when database is properly set up
+      const sampleData: DictionaryEntry[] = [
+        {
+          id: "1",
+          goji_text: "Yako",
+          english_translation: "How are you?",
+          hausa_translation: "Yaya kake?",
+          category_id: "greetings",
+          audio_data: null,
+          goji_categories: { name: "greetings" }
+        },
+        {
+          id: "2", 
+          goji_text: "Lafia",
+          english_translation: "Health/Peace",
+          hausa_translation: "Lafiya",
+          category_id: "greetings",
+          audio_data: null,
+          goji_categories: { name: "greetings" }
+        },
+        {
+          id: "3",
+          goji_text: "Sannu",
+          english_translation: "Hello/Welcome",
+          hausa_translation: "Sannu",
+          category_id: "greetings", 
+          audio_data: null,
+          goji_categories: { name: "greetings" }
+        }
+      ];
+      
+      setEntries(sampleData);
+    } catch (error) {
+      toast({ title: "Error", description: "Could not load dictionary entries", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const playAudio = (audioData: string | null) => {
+    if (!audioData) {
+      toast({ title: "No audio", description: "No audio available for this word" });
+      return;
+    }
+    
+    try {
+      const audio = new Audio(audioData);
+      audio.play();
+    } catch (error) {
+      toast({ title: "Error", description: "Could not play audio", variant: "destructive" });
+    }
+  };
+
+  const filteredEntries = entries.filter(entry =>
+    entry.goji_text.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (entry.english_translation && entry.english_translation.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (entry.hausa_translation && entry.hausa_translation.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
@@ -53,33 +111,50 @@ const DictionaryPage = () => {
         </div>
       </div>
 
-      <div className="space-y-3">
-        {filteredWords.map((word) => (
-          <Card key={word.id} className="p-4">
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold text-foreground">{word.goji}</h3>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-medium">English:</span> {word.english}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-medium">Hausa:</span> {word.hausa}
-                </p>
+      {loading ? (
+        <div className="text-center py-8">
+          <p className="text-muted-foreground">Loading dictionary...</p>
+          <p className="text-sm text-muted-foreground">Ana loda kamus...</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filteredEntries.map((entry) => (
+            <Card key={entry.id} className="p-4">
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-foreground">{entry.goji_text}</h3>
+                <div className="space-y-1">
+                  {entry.english_translation && (
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-medium">English:</span> {entry.english_translation}
+                    </p>
+                  )}
+                  {entry.hausa_translation && (
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-medium">Hausa:</span> {entry.hausa_translation}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">
+                    {entry.goji_categories?.name || 'general'}
+                  </span>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => playAudio(entry.audio_data)}
+                    className="flex items-center space-x-1"
+                  >
+                    <Volume2 className="h-4 w-4" />
+                    <span>Play Audio</span>
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center justify-between pt-2">
-                <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">
-                  {word.category}
-                </span>
-                <Button variant="outline" size="sm">
-                  Play Audio
-                </Button>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+            </Card>
+          ))}
+        </div>
+      )}
 
-      {filteredWords.length === 0 && (
+      {!loading && filteredEntries.length === 0 && (
         <div className="text-center py-8">
           <p className="text-muted-foreground">No words found</p>
           <p className="text-sm text-muted-foreground">Ba a sami kalmomi ba</p>
