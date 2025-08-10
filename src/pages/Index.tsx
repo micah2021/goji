@@ -6,6 +6,8 @@ import DictionaryPage from "@/components/pages/DictionaryPage";
 import NumbersPage from "@/components/pages/NumbersPage";
 import StoriesPage from "@/components/pages/StoriesPage";
 import AboutPage from "@/components/pages/AboutPage";
+import TutorPage from "@/components/pages/TutorPage";
+import ProfilePage from "@/components/pages/ProfilePage";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("record");
@@ -22,6 +24,10 @@ const Index = () => {
         return <NumbersPage />;
       case "stories":
         return <StoriesPage />;
+      case "tutor":
+        return <TutorPage />;
+      case "profile":
+        return <ProfilePage />;
       case "about":
         return <AboutPage />;
       default:
