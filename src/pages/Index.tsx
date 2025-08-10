@@ -3,9 +3,9 @@ import Navigation from "@/components/layout/Navigation";
 import RecordPage from "@/components/pages/RecordPage";
 import LessonsPage from "@/components/pages/LessonsPage";
 import DictionaryPage from "@/components/pages/DictionaryPage";
+import NumbersPage from "@/components/pages/NumbersPage";
 import StoriesPage from "@/components/pages/StoriesPage";
-import TutorPage from "@/components/pages/TutorPage";
-import ProfilePage from "@/components/pages/ProfilePage";
+import AboutPage from "@/components/pages/AboutPage";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("record");
@@ -18,12 +18,12 @@ const Index = () => {
         return <LessonsPage />;
       case "dictionary":
         return <DictionaryPage />;
+      case "numbers":
+        return <NumbersPage />;
       case "stories":
         return <StoriesPage />;
-      case "tutor":
-        return <TutorPage />;
-      case "profile":
-        return <ProfilePage />;
+      case "about":
+        return <AboutPage />;
       default:
         return <RecordPage />;
     }

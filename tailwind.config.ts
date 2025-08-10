@@ -52,6 +52,12 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				goji: {
+					warm: 'hsl(var(--goji-warm))',
+					earth: 'hsl(var(--goji-earth))',
+					nature: 'hsl(var(--goji-nature))',
+					accent: 'hsl(var(--goji-accent))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
