@@ -36,8 +36,15 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="w-full min-h-screen bg-card relative">
+    <div className="min-h-screen bg-background relative">
+      {/* Goji Landscape Background */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-5 pointer-events-none"
+        style={{
+          backgroundImage: "url('/lovable-uploads/c4c2a594-2bf4-425d-92a2-6f2e7a5c6a7f.png')"
+        }}
+      />
+      <main className="w-full min-h-screen bg-card/80 relative z-10">
         <div className="animate-fade-in">
           {renderPage()}
         </div>
