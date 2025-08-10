@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      approved_stories: {
+        Row: {
+          approved_at: string
+          contribution_id: string
+          contributor_id: string
+          created_at: string
+          cultural_context: string | null
+          english_translation: string
+          goji_text: string
+          hausa_translation: string | null
+          id: string
+          title: string
+        }
+        Insert: {
+          approved_at?: string
+          contribution_id: string
+          contributor_id: string
+          created_at?: string
+          cultural_context?: string | null
+          english_translation: string
+          goji_text: string
+          hausa_translation?: string | null
+          id?: string
+          title: string
+        }
+        Update: {
+          approved_at?: string
+          contribution_id?: string
+          contributor_id?: string
+          created_at?: string
+          cultural_context?: string | null
+          english_translation?: string
+          goji_text?: string
+          hausa_translation?: string | null
+          id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approved_stories_contribution_id_fkey"
+            columns: ["contribution_id"]
+            isOneToOne: false
+            referencedRelation: "contributions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_messages: {
         Row: {
           created_at: string | null
@@ -67,6 +114,133 @@ export type Database = {
           webhook_url?: string | null
         }
         Relationships: []
+      }
+      contribution_votes: {
+        Row: {
+          contribution_id: string
+          created_at: string
+          id: string
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          contribution_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          contribution_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contribution_votes_contribution_id_fkey"
+            columns: ["contribution_id"]
+            isOneToOne: false
+            referencedRelation: "contributions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contributions: {
+        Row: {
+          created_at: string
+          cultural_context: string | null
+          english_translation: string
+          example_sentence: string | null
+          goji_text: string
+          hausa_translation: string | null
+          id: string
+          status: string
+          type: string
+          updated_at: string
+          user_id: string
+          votes_against: number
+          votes_for: number
+        }
+        Insert: {
+          created_at?: string
+          cultural_context?: string | null
+          english_translation: string
+          example_sentence?: string | null
+          goji_text: string
+          hausa_translation?: string | null
+          id?: string
+          status?: string
+          type: string
+          updated_at?: string
+          user_id: string
+          votes_against?: number
+          votes_for?: number
+        }
+        Update: {
+          created_at?: string
+          cultural_context?: string | null
+          english_translation?: string
+          example_sentence?: string | null
+          goji_text?: string
+          hausa_translation?: string | null
+          id?: string
+          status?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+          votes_against?: number
+          votes_for?: number
+        }
+        Relationships: []
+      }
+      dictionary_entries: {
+        Row: {
+          approved_at: string
+          contribution_id: string
+          contributor_id: string
+          created_at: string
+          cultural_context: string | null
+          english_translation: string
+          example_sentence: string | null
+          goji_word: string
+          hausa_translation: string | null
+          id: string
+        }
+        Insert: {
+          approved_at?: string
+          contribution_id: string
+          contributor_id: string
+          created_at?: string
+          cultural_context?: string | null
+          english_translation: string
+          example_sentence?: string | null
+          goji_word: string
+          hausa_translation?: string | null
+          id?: string
+        }
+        Update: {
+          approved_at?: string
+          contribution_id?: string
+          contributor_id?: string
+          created_at?: string
+          cultural_context?: string | null
+          english_translation?: string
+          example_sentence?: string | null
+          goji_word?: string
+          hausa_translation?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dictionary_entries_contribution_id_fkey"
+            columns: ["contribution_id"]
+            isOneToOne: false
+            referencedRelation: "contributions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_categories: {
         Row: {
@@ -149,11 +323,42 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          points: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          points?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          points?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      approve_contribution: {
+        Args: { contribution_id: string }
+        Returns: undefined
+      }
       get_weather_data: {
         Args: Record<PropertyKey, never>
         Returns: Json
