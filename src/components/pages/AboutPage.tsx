@@ -22,7 +22,7 @@ const AboutPage = () => {
           <Heart className="h-10 w-10 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-goji-earth">Elo Goji</h1>
+          <h1 className="text-2xl font-bold text-goji-earth">Fo Goji</h1>
           <p className="text-lg text-goji-warm font-medium">The Voice of Our People</p>
           <p className="text-sm text-muted-foreground mt-2">
             Muryar Mutanenmu • Preserving the Goji language for future generations
@@ -121,7 +121,7 @@ const AboutPage = () => {
             </p>
             <p className="flex items-center space-x-2">
               <span className="text-goji-warm">📜</span>
-              <span>Include proverbs and stories </span>
+              <span>Include proverbs and stories from the 2006 document</span>
             </p>
             <p className="flex items-center space-x-2">
               <span className="text-goji-warm">🏫</span>
