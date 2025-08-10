@@ -2,6 +2,7 @@ import { Mail, Phone, Heart, BookOpen, Users, Globe } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import gojiLogo from "@/assets/goji-logo.png";
 
 const AboutPage = () => {
   const { toast } = useToast();
@@ -18,8 +19,8 @@ const AboutPage = () => {
     <div className="p-4 space-y-6 pb-20">
       {/* Header */}
       <div className="text-center space-y-4">
-        <div className="w-20 h-20 bg-gradient-to-br from-goji-warm to-goji-earth rounded-full mx-auto flex items-center justify-center">
-          <Heart className="h-10 w-10 text-white" />
+        <div className="w-20 h-20 mx-auto">
+          <img src={gojiLogo} alt="Goji Language Logo" className="w-full h-full object-contain" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-goji-earth">Fo Goji</h1>
@@ -136,6 +137,17 @@ const AboutPage = () => {
               <span>Partner with schools for weekly usage</span>
             </p>
           </div>
+        </div>
+      </Card>
+
+      {/* Acknowledgment */}
+      <Card className="p-6 bg-gradient-to-br from-yellow-50 to-orange-50 border-orange-200">
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-goji-earth">Important Note</h2>
+          <p className="text-sm text-foreground leading-relaxed">
+            I apologize to test run the app using their reading and writing in Goji materials, 
+            however I acknowledge the fact that this is only paper I find online. Thank you.
+          </p>
         </div>
       </Card>
 
