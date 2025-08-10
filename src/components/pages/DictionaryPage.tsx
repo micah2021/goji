@@ -62,28 +62,28 @@ const DictionaryPage = () => {
         // Home & Objects
         { id: "11", goji_text: "minna", english_translation: "house", hausa_translation: "gida", category_id: "home", audio_data: null, goji_categories: { name: "home", emoji: "🏠" } },
         { id: "12", goji_text: "pomina", english_translation: "room", hausa_translation: "daki", category_id: "home", audio_data: null, goji_categories: { name: "home", emoji: "🏠" } },
-        { id: "13", goji_text: "iro", english_translation: "pot", hausa_translation: "tukunya", category_id: "home", audio_data: null, goji_categories: { name: "home", emoji: "🏠" } },
+        { id: "13", goji_text: "telan", english_translation: "pot", hausa_translation: "tukunya", category_id: "home", audio_data: null, goji_categories: { name: "home", emoji: "🏠" } },
         { id: "14", goji_text: "gburam", english_translation: "chair", hausa_translation: "kujera", category_id: "home", audio_data: null, goji_categories: { name: "home", emoji: "🏠" } },
         { id: "15", goji_text: "dummo̱", english_translation: "door", hausa_translation: "kofa", category_id: "home", audio_data: null, goji_categories: { name: "home", emoji: "🏠" } },
         
         // Nature
-        { id: "16", goji_text: "tere", english_translation: "tree", hausa_translation: "itace", category_id: "nature", audio_data: null, goji_categories: { name: "nature", emoji: "🌳" } },
-        { id: "17", goji_text: "ɗukni", english_translation: "water", hausa_translation: "ruwa", category_id: "nature", audio_data: null, goji_categories: { name: "nature", emoji: "🌳" } },
+        { id: "16", goji_text: "biro", english_translation: "tree", hausa_translation: "itace", category_id: "nature", audio_data: null, goji_categories: { name: "nature", emoji: "🌳" } },
+        { id: "17", goji_text: "ɗo", english_translation: "water", hausa_translation: "ruwa", category_id: "nature", audio_data: null, goji_categories: { name: "nature", emoji: "🌳" } },
         { id: "18", goji_text: "shela", english_translation: "stone", hausa_translation: "dutse", category_id: "nature", audio_data: null, goji_categories: { name: "nature", emoji: "🌳" } },
-        { id: "19", goji_text: "gei", english_translation: "sun", hausa_translation: "rana", category_id: "nature", audio_data: null, goji_categories: { name: "nature", emoji: "🌳" } },
-        { id: "20", goji_text: "yamma", english_translation: "moon", hausa_translation: "wata", category_id: "nature", audio_data: null, goji_categories: { name: "nature", emoji: "🌳" } },
+        { id: "19", goji_text: "daran", english_translation: "sun", hausa_translation: "rana", category_id: "nature", audio_data: null, goji_categories: { name: "nature", emoji: "🌳" } },
+        { id: "20", goji_text: "tere", english_translation: "moon", hausa_translation: "wata", category_id: "nature", audio_data: null, goji_categories: { name: "nature", emoji: "🌳" } },
         
         // Food
-        { id: "21", goji_text: "viye", english_translation: "food", hausa_translation: "abinci", category_id: "food", audio_data: null, goji_categories: { name: "food", emoji: "🍲" } },
+        { id: "21", goji_text: "wechina", english_translation: "food", hausa_translation: "abinci", category_id: "food", audio_data: null, goji_categories: { name: "food", emoji: "🍲" } },
         { id: "22", goji_text: "o̱lo̱", english_translation: "meat", hausa_translation: "nama", category_id: "food", audio_data: null, goji_categories: { name: "food", emoji: "🍲" } },
-        { id: "23", goji_text: "wuji", english_translation: "yam", hausa_translation: "doya", category_id: "food", audio_data: null, goji_categories: { name: "food", emoji: "🍲" } },
-        { id: "24", goji_text: "sho̱o̱", english_translation: "corn", hausa_translation: "masara", category_id: "food", audio_data: null, goji_categories: { name: "food", emoji: "🍲" } },
+        { id: "23", goji_text: "chanye", english_translation: "yam", hausa_translation: "doya", category_id: "food", audio_data: null, goji_categories: { name: "food", emoji: "🍲" } },
+        { id: "24", goji_text: "komo", english_translation: "corn", hausa_translation: "masara", category_id: "food", audio_data: null, goji_categories: { name: "food", emoji: "🍲" } },
         
         // Additional words
         { id: "25", goji_text: "ɗo̱ƙ", english_translation: "one", hausa_translation: "ɗaya", category_id: "numbers", audio_data: null, goji_categories: { name: "numbers", emoji: "🔢" } },
         { id: "26", goji_text: "palou", english_translation: "two", hausa_translation: "biyu", category_id: "numbers", audio_data: null, goji_categories: { name: "numbers", emoji: "🔢" } },
         { id: "27", goji_text: "tat", english_translation: "three", hausa_translation: "uku", category_id: "numbers", audio_data: null, goji_categories: { name: "numbers", emoji: "🔢" } },
-        { id: "28", goji_text: "kpomo", english_translation: "ten", hausa_translation: "goma", category_id: "numbers", audio_data: null, goji_categories: { name: "numbers", emoji: "🔢" } },
+        { id: "28", goji_text: "kpomu", english_translation: "ten", hausa_translation: "goma", category_id: "numbers", audio_data: null, goji_categories: { name: "numbers", emoji: "🔢" } },
         { id: "29", goji_text: "fuwat", english_translation: "five", hausa_translation: "biyar", category_id: "numbers", audio_data: null, goji_categories: { name: "numbers", emoji: "🔢" } },
         { id: "30", goji_text: "parabanan", english_translation: "six", hausa_translation: "shida", category_id: "numbers", audio_data: null, goji_categories: { name: "numbers", emoji: "🔢" } },
       ];
