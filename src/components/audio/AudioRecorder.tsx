@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Mic, Square, Play, Pause, Save, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import gojiLogo from "@/assets/goji-logo.png";
 
 const AudioRecorder = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -113,17 +114,17 @@ const AudioRecorder = () => {
   return (
     <Card className="p-6 text-center space-y-6">
       <div className="space-y-4">
-        {/* Cultural Logo */}
+        {/* Goji Logo */}
         <div className="flex justify-center">
           <img 
-            src="/lovable-uploads/7c992103-3e2f-4bf9-9ac6-22f45f73328d.png" 
-            alt="Goji Cultural Landscape" 
-            className="w-16 h-12 object-cover rounded-lg shadow-md border border-goji-accent/20"
+            src={gojiLogo} 
+            alt="Goji Language Logo" 
+            className="w-16 h-16 object-contain"
           />
         </div>
         
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold text-foreground">Goji Keeper (tafok Goji)</h2>
+          <h2 className="text-2xl font-bold text-foreground">Goji Keeper</h2>
           <p className="text-muted-foreground">Record • Preserve • Share</p>
           <p className="text-sm text-muted-foreground">Rikodin • Kiyaye • Raba</p>
         </div>
