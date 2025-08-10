@@ -121,7 +121,7 @@ const AboutPage = () => {
             </p>
             <p className="flex items-center space-x-2">
               <span className="text-goji-warm">📜</span>
-              <span>Include proverbs and stories from the 2006 document</span>
+              <span>Include proverbs and stories </span>
             </p>
             <p className="flex items-center space-x-2">
               <span className="text-goji-warm">🏫</span>
