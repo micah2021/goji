@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navigation from "@/components/layout/Navigation";
+import CulturalBackground from "@/components/layout/CulturalBackground";
 import RecordPage from "@/components/pages/RecordPage";
 import LessonsPage from "@/components/pages/LessonsPage";
 import DictionaryPage from "@/components/pages/DictionaryPage";
@@ -30,9 +31,12 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="max-w-md mx-auto bg-card shadow-lg min-h-screen relative">
-        {renderPage()}
+    <div className="min-h-screen bg-background relative">
+      <CulturalBackground />
+      <main className="max-w-md mx-auto bg-card/95 backdrop-blur-sm shadow-lg min-h-screen relative z-10">
+        <div className="animate-fade-in">
+          {renderPage()}
+        </div>
         <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
       </main>
     </div>

@@ -112,6 +112,33 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground relative overflow-x-hidden;
+  }
+}
+
+@layer components {
+  .cultural-background {
+    @apply absolute inset-0 pointer-events-none overflow-hidden;
+  }
+  
+  .mountain-silhouette {
+    @apply absolute bottom-0 left-0 w-full h-32 opacity-20;
+    background: linear-gradient(to top, hsl(var(--goji-earth)), transparent);
+    clip-path: polygon(0 100%, 15% 60%, 35% 80%, 55% 40%, 75% 70%, 90% 50%, 100% 75%, 100% 100%);
+  }
+  
+  .floating-patterns {
+    @apply absolute inset-0 opacity-10;
+  }
+  
+  .goji-symbol {
+    @apply absolute w-16 h-16 rounded-full border-2 opacity-20;
+    border-color: hsl(var(--goji-warm));
+    background: radial-gradient(circle, hsl(var(--goji-accent))/20, transparent);
+  }
+  
+  .cultural-clouds {
+    @apply absolute w-20 h-8 rounded-full opacity-30;
+    background: linear-gradient(90deg, hsl(var(--goji-nature))/30, hsl(var(--goji-warm))/20, transparent);
   }
 }
