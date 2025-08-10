@@ -173,7 +173,7 @@ const AboutPage = () => {
           Made with ❤️ for the Goji people
         </p>
         <p className="text-xs text-muted-foreground mt-1">
-          © 2024 Goji Keeper • Preserving our heritage, one word at a time
+          © 2025 Goji Keeper • Preserving our heritage, one word at a time
         </p>
       </div>
     </div>
