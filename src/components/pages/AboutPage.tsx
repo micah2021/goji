@@ -9,9 +9,9 @@ const AboutPage = () => {
 
   const handleContact = (type: string) => {
     if (type === "email") {
-      window.open("mailto:micah@gojikeeper.com", "_blank");
+      window.open("mailto:micahmunang@gmail.com", "_blank");
     } else if (type === "phone") {
-      toast({ title: "Contact", description: "Phone contact coming soon!" });
+      window.open("tel:+2348159560437", "_blank");
     }
   };
 
@@ -173,7 +173,7 @@ const AboutPage = () => {
               className="flex items-center space-x-2 border-goji-earth text-goji-earth hover:bg-goji-earth hover:text-white"
             >
               <Phone className="h-4 w-4" />
-              <span>Phone Contact (Coming Soon)</span>
+              <span>Call +234 815 956 0437</span>
             </Button>
           </div>
         </div>
