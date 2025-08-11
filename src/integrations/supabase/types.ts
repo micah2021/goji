@@ -242,6 +242,36 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          audio_url: string | null
+          created_at: string
+          id: string
+          tags: string | null
+          text: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audio_url?: string | null
+          created_at?: string
+          id?: string
+          tags?: string | null
+          text: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          audio_url?: string | null
+          created_at?: string
+          id?: string
+          tags?: string | null
+          text?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       product_categories: {
         Row: {
           created_at: string

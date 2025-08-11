@@ -45,11 +45,11 @@ const ChatPage = () => {
 
   const fetchMessages = async () => {
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("messages")
         .select(`
           *,
-          profiles (
+          profiles!messages_user_id_fkey (
             username,
             full_name,
             role
@@ -107,7 +107,7 @@ const ChatPage = () => {
 
     setIsLoading(true);
     try {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from("messages")
         .insert({
           user_id: user.id,
@@ -178,7 +178,7 @@ const ChatPage = () => {
         .from('chat-audio')
         .getPublicUrl(fileName);
 
-      const { error: messageError } = await (supabase as any)
+      const { error: messageError } = await supabase
         .from("messages")
         .insert({
           user_id: user.id,
@@ -204,7 +204,7 @@ const ChatPage = () => {
 
   const deleteMessage = async (messageId: string) => {
     try {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from("messages")
         .delete()
         .eq("id", messageId);
