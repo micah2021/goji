@@ -628,6 +628,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      manually_approve_contribution: {
+        Args: { contribution_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
