@@ -49,7 +49,7 @@ const ChatPage = () => {
         .from("messages")
         .select(`
           *,
-          profiles!messages_user_id_fkey (
+          profiles:user_id (
             username,
             full_name,
             role
