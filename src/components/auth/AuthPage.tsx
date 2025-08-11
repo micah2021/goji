@@ -131,8 +131,16 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-background relative">
+      {/* Goji Mountain Background */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-90 pointer-events-none"
+        style={{
+          backgroundImage: "url('/lovable-uploads/97d6d151-c5ea-473d-9760-e6950ec3c358.png')"
+        }}
+      />
+      <div className="min-h-screen flex items-center justify-center p-4 relative z-10">
+        <Card className="w-full max-w-md bg-card/90 backdrop-blur-sm">
         <CardHeader className="text-center">
           <img src="/goji-logo.png" alt="Goji" className="h-16 w-16 mx-auto mb-4" />
           <CardTitle>Welcome to Goji Community</CardTitle>
@@ -309,7 +317,8 @@ const AuthPage = () => {
             </Button>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 };
