@@ -1,37 +1,46 @@
 import { useState } from "react";
+import { useAuth } from "@/components/auth/AuthProvider";
 import Navigation from "@/components/layout/Navigation";
-import RecordPage from "@/components/pages/RecordPage";
+import ChatPage from "@/components/pages/ChatPage";
 import LessonsPage from "@/components/pages/LessonsPage";
 import DictionaryPage from "@/components/pages/DictionaryPage";
-import NumbersPage from "@/components/pages/NumbersPage";
-import StoriesPage from "@/components/pages/StoriesPage";
-import AboutPage from "@/components/pages/AboutPage";
 import TutorPage from "@/components/pages/TutorPage";
 import ProfilePage from "@/components/pages/ProfilePage";
+import AuthPage from "@/components/auth/AuthPage";
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState("record");
+  const { user, loading } = useAuth();
+  const [activeTab, setActiveTab] = useState("chat");
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <img src="/goji-logo.png" alt="Goji" className="h-16 w-16 mx-auto mb-4 animate-pulse" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthPage />;
+  }
 
   const renderPage = () => {
     switch (activeTab) {
-      case "record":
-        return <RecordPage />;
+      case "chat":
+        return <ChatPage />;
       case "lessons":
         return <LessonsPage />;
       case "dictionary":
         return <DictionaryPage />;
-      case "numbers":
-        return <NumbersPage />;
-      case "stories":
-        return <StoriesPage />;
       case "tutor":
         return <TutorPage />;
       case "profile":
         return <ProfilePage />;
-      case "about":
-        return <AboutPage />;
       default:
-        return <RecordPage />;
+        return <ChatPage />;
     }
   };
 

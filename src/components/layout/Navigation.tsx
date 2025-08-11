@@ -9,12 +9,11 @@ interface NavigationProps {
 
 const Navigation = ({ activeTab, onTabChange }: NavigationProps) => {
   const tabs = [
-    { id: "record", icon: Mic, label: "Record", labelHa: "Yin sauti" },
-    { id: "lessons", icon: GraduationCap, label: "Lessons", labelHa: "Darussai" },
+    { id: "chat", icon: MessageCircle, label: "Chat", labelHa: "Hira" },
     { id: "dictionary", icon: Book, label: "Dictionary", labelHa: "Kamus" },
+    { id: "lessons", icon: GraduationCap, label: "Lessons", labelHa: "Darussai" },
     { id: "tutor", icon: Brain, label: "AI Tutor", labelHa: "Malamin AI" },
     { id: "profile", icon: User, label: "Profile", labelHa: "Bayani" },
-    { id: "about", icon: Info, label: "About", labelHa: "Game da mu" },
   ];
 
   return (
