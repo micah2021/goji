@@ -14,6 +14,85 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_learning_data: {
+        Row: {
+          audio_recording_id: string | null
+          content: string
+          conversation_id: string | null
+          created_at: string | null
+          data_type: string
+          difficulty_level: string | null
+          id: string
+          is_verified: boolean | null
+          language_pair: string | null
+          learning_category: string | null
+          message_id: string | null
+          metadata: Json | null
+          quality_score: number | null
+          updated_at: string | null
+          usage_context: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          audio_recording_id?: string | null
+          content: string
+          conversation_id?: string | null
+          created_at?: string | null
+          data_type: string
+          difficulty_level?: string | null
+          id?: string
+          is_verified?: boolean | null
+          language_pair?: string | null
+          learning_category?: string | null
+          message_id?: string | null
+          metadata?: Json | null
+          quality_score?: number | null
+          updated_at?: string | null
+          usage_context?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          audio_recording_id?: string | null
+          content?: string
+          conversation_id?: string | null
+          created_at?: string | null
+          data_type?: string
+          difficulty_level?: string | null
+          id?: string
+          is_verified?: boolean | null
+          language_pair?: string | null
+          learning_category?: string | null
+          message_id?: string | null
+          metadata?: Json | null
+          quality_score?: number | null
+          updated_at?: string | null
+          usage_context?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_learning_data_audio_recording_id_fkey"
+            columns: ["audio_recording_id"]
+            isOneToOne: false
+            referencedRelation: "audio_recordings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_learning_data_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_learning_data_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       approved_stories: {
         Row: {
           approved_at: string
@@ -57,6 +136,84 @@ export type Database = {
             columns: ["contribution_id"]
             isOneToOne: false
             referencedRelation: "contributions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audio_recordings: {
+        Row: {
+          ai_analysis: Json | null
+          audio_format: string | null
+          audio_quality_score: number | null
+          conversation_id: string | null
+          created_at: string | null
+          duration_seconds: number | null
+          file_size: number | null
+          file_url: string
+          id: string
+          language_detected: string | null
+          message_id: string | null
+          noise_level: number | null
+          processing_status: string | null
+          pronunciation_score: number | null
+          transcription: string | null
+          transcription_confidence: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          audio_format?: string | null
+          audio_quality_score?: number | null
+          conversation_id?: string | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          file_size?: number | null
+          file_url: string
+          id?: string
+          language_detected?: string | null
+          message_id?: string | null
+          noise_level?: number | null
+          processing_status?: string | null
+          pronunciation_score?: number | null
+          transcription?: string | null
+          transcription_confidence?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_analysis?: Json | null
+          audio_format?: string | null
+          audio_quality_score?: number | null
+          conversation_id?: string | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          language_detected?: string | null
+          message_id?: string | null
+          noise_level?: number | null
+          processing_status?: string | null
+          pronunciation_score?: number | null
+          transcription?: string | null
+          transcription_confidence?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audio_recordings_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audio_recordings_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
             referencedColumns: ["id"]
           },
         ]
@@ -195,6 +352,57 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          conversation_type: string | null
+          created_at: string | null
+          creator_id: string
+          description: string | null
+          difficulty_level: string | null
+          id: string
+          is_active: boolean | null
+          language_focus: string | null
+          message_count: number | null
+          metadata: Json | null
+          participant_count: number | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          conversation_type?: string | null
+          created_at?: string | null
+          creator_id: string
+          description?: string | null
+          difficulty_level?: string | null
+          id?: string
+          is_active?: boolean | null
+          language_focus?: string | null
+          message_count?: number | null
+          metadata?: Json | null
+          participant_count?: number | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          conversation_type?: string | null
+          created_at?: string | null
+          creator_id?: string
+          description?: string | null
+          difficulty_level?: string | null
+          id?: string
+          is_active?: boolean | null
+          language_focus?: string | null
+          message_count?: number | null
+          metadata?: Json | null
+          participant_count?: number | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       dictionary_entries: {
         Row: {
           approved_at: string
@@ -245,6 +453,7 @@ export type Database = {
       messages: {
         Row: {
           audio_url: string | null
+          conversation_id: string | null
           created_at: string
           id: string
           tags: string | null
@@ -254,6 +463,7 @@ export type Database = {
         }
         Insert: {
           audio_url?: string | null
+          conversation_id?: string | null
           created_at?: string
           id?: string
           tags?: string | null
@@ -263,6 +473,7 @@ export type Database = {
         }
         Update: {
           audio_url?: string | null
+          conversation_id?: string | null
           created_at?: string
           id?: string
           tags?: string | null
@@ -271,6 +482,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "messages_user_id_fkey"
             columns: ["user_id"]
