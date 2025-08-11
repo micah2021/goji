@@ -121,7 +121,7 @@ const DictionaryPage = () => {
   });
 
   return (
-    <div className="p-4 space-y-6 pb-20">
+    <div className="space-y-6">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>

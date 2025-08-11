@@ -77,7 +77,7 @@ const LessonsPage = () => {
   };
 
   return (
-    <div className="p-4 space-y-6 pb-20">
+    <div className="space-y-6">
       <div className="space-y-4">
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold text-foreground">Goji Lessons</h1>

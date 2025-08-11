@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import Navigation from "@/components/layout/Navigation";
 import ChatPage from "@/components/pages/ChatPage";
-import LessonsPage from "@/components/pages/LessonsPage";
-import DictionaryPage from "@/components/pages/DictionaryPage";
+import LearnPage from "@/components/pages/LearnPage";
 import TutorPage from "@/components/pages/TutorPage";
+import AboutPage from "@/components/pages/AboutPage";
 import ProfilePage from "@/components/pages/ProfilePage";
 import AuthPage from "@/components/auth/AuthPage";
 
@@ -31,12 +31,12 @@ const Index = () => {
     switch (activeTab) {
       case "chat":
         return <ChatPage />;
-      case "lessons":
-        return <LessonsPage />;
-      case "dictionary":
-        return <DictionaryPage />;
+      case "learn":
+        return <LearnPage />;
       case "tutor":
         return <TutorPage />;
+      case "about":
+        return <AboutPage />;
       case "profile":
         return <ProfilePage />;
       default:

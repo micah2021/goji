@@ -10,9 +10,9 @@ interface NavigationProps {
 const Navigation = ({ activeTab, onTabChange }: NavigationProps) => {
   const tabs = [
     { id: "chat", icon: MessageCircle, label: "Chat", labelHa: "Hira" },
-    { id: "dictionary", icon: Book, label: "Dictionary", labelHa: "Kamus" },
-    { id: "lessons", icon: GraduationCap, label: "Lessons", labelHa: "Darussai" },
+    { id: "learn", icon: Book, label: "Learn", labelHa: "Koyo" },
     { id: "tutor", icon: Brain, label: "AI Tutor", labelHa: "Malamin AI" },
+    { id: "about", icon: Info, label: "About", labelHa: "Game da" },
     { id: "profile", icon: User, label: "Profile", labelHa: "Bayani" },
   ];
 
