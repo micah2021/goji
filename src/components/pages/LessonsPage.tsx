@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import LessonContent from "./LessonContent";
 
 interface Lesson {
   id: string;
@@ -19,6 +20,7 @@ interface Lesson {
 }
 
 const LessonsPage = () => {
+  const [currentLesson, setCurrentLesson] = useState<string | null>(null);
   const [lessons] = useState<Lesson[]>([
     {
       id: "0",
@@ -87,6 +89,18 @@ const LessonsPage = () => {
       default: return { en: 'Unknown', ha: 'Babu' };
     }
   };
+
+  const handleLessonStart = (lessonId: string) => {
+    setCurrentLesson(lessonId);
+  };
+
+  const handleBackToLessons = () => {
+    setCurrentLesson(null);
+  };
+
+  if (currentLesson) {
+    return <LessonContent lessonId={currentLesson} onBack={handleBackToLessons} />;
+  }
 
   return (
     <div className="space-y-6">
@@ -181,6 +195,7 @@ const LessonsPage = () => {
                     className="flex-1" 
                     disabled={lesson.isLocked}
                     variant={lesson.isCompleted ? "outline" : "default"}
+                    onClick={() => handleLessonStart(lesson.id)}
                   >
                     <Play className="h-4 w-4 mr-2" />
                     {lesson.isCompleted ? "Review • Nazarta" : lesson.isLocked ? "Locked • Kulle" : "Start • Fara"}
