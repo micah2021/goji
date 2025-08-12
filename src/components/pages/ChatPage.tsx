@@ -13,7 +13,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Send, Trash2, Brain, BarChart3, Menu } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import ConversationManager from "@/components/chat/ConversationManager";
-import EnhancedAudioRecorder from "@/components/chat/EnhancedAudioRecorder";
+import VoiceRecorder from "@/components/chat/VoiceRecorder";
 
 interface Message {
   id: string;
@@ -166,9 +166,22 @@ const ChatPage = () => {
           table: 'messages',
           filter: `conversation_id=eq.${selectedConversationId}`
         },
-        (payload) => {
+        async (payload) => {
           const newMessage = payload.new as Message;
-          setMessages(prev => [...prev, newMessage]);
+          
+          // Fetch profile data for the new message
+          const { data: profileData } = await supabase
+            .from("profiles")
+            .select("username, full_name, role")
+            .eq("user_id", newMessage.user_id)
+            .maybeSingle();
+          
+          const messageWithProfile = {
+            ...newMessage,
+            profiles: profileData || { username: '', full_name: '', role: 'member' }
+          };
+          
+          setMessages(prev => [...prev, messageWithProfile]);
           scrollToBottom();
         }
       )
@@ -411,9 +424,9 @@ const ChatPage = () => {
                   disabled={isLoading}
                   className={`flex-1 ${isMobile ? 'text-sm h-9' : ''}`}
                 />
-                <EnhancedAudioRecorder
+                <VoiceRecorder
                   conversationId={selectedConversationId}
-                  onAudioUploaded={() => {}}
+                  onAudioSent={() => {}}
                   disabled={isLoading}
                 />
                 <Button 
