@@ -628,6 +628,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       manually_approve_contribution: {
         Args: { contribution_id: string }
         Returns: Json
