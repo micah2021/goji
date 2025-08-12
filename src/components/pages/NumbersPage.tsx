@@ -21,19 +21,62 @@ const NumbersPage = () => {
   const { toast } = useToast();
 
   const numbers: NumberData[] = [
-    { goji: "ɗo̱ƙ", english: "one", hausa: "ɗaya", number: 1, example: "wi ɗo̱ƙ = one goat" },
-    { goji: "palou", english: "two", hausa: "biyu", number: 2, example: "wi palou = two goats" },
+    // Basic numbers 1-10
+    { goji: "ɗo̱ƙ", english: "one", hausa: "ɗaya", number: 1 },
+    { goji: "palou", english: "two", hausa: "biyu", number: 2 },
     { goji: "tat", english: "three", hausa: "uku", number: 3 },
-    { goji: "perou", english: "ten", hausa: "goma", number: 4 },
+    { goji: "pereu", english: "four", hausa: "huɗu", number: 4 },
     { goji: "fuwat", english: "five", hausa: "biyar", number: 5 },
-    { goji: "parabanan", english: "six", hausa: "shida", number: 6 },
-    { goji: "pralou", english: "seven", hausa: "bakwai", number: 7 },
-    { goji: "podidou", english: "eight", hausa: "takwas", number: 8 },
-    { goji: "fegerou", english: "nine", hausa: "tara", number: 9 },
-    { goji: "kpomu", english: "ten", hausa: "goma", number: 10 },
-    { goji: "nepalou ", english: "twenty", hausa: "ashirin", number: 20 },
-    { goji: "ɗari", english: "hundred", hausa: "ɗari", number: 100 },
-    { goji: "dubu", english: "thousand", hausa: "dubu", number: 1000 },
+    { goji: "paragbana", english: "six", hausa: "shida", number: 6 },
+    { goji: "parlau", english: "seven", hausa: "bakwai", number: 7 },
+    { goji: "piɗidou", english: "eight", hausa: "takwas", number: 8 },
+    { goji: "fejereu", english: "nine", hausa: "tara", number: 9 },
+    { goji: "kpomo", english: "ten", hausa: "goma", number: 10 },
+    
+    // 11-19
+    { goji: "ge ɗo̱ƙ", english: "eleven", hausa: "sha ɗaya", number: 11 },
+    { goji: "ge palou", english: "twelve", hausa: "sha biyu", number: 12 },
+    { goji: "ge tat", english: "thirteen", hausa: "sha uku", number: 13 },
+    { goji: "ge pereu", english: "fourteen", hausa: "sha huɗu", number: 14 },
+    { goji: "ge fuwat", english: "fifteen", hausa: "sha biyar", number: 15 },
+    { goji: "ge paragbana", english: "sixteen", hausa: "sha shida", number: 16 },
+    { goji: "ge parlau", english: "seventeen", hausa: "sha bakwai", number: 17 },
+    { goji: "ge piɗidou", english: "eighteen", hausa: "sha takwas", number: 18 },
+    { goji: "ge fejereu", english: "nineteen", hausa: "sha tara", number: 19 },
+    
+    // 20s
+    { goji: "nopalou", english: "twenty", hausa: "ashirin", number: 20 },
+    { goji: "nopalou ɗo̱ƙ", english: "twenty one", hausa: "ashirin ɗa ɗaya", number: 21 },
+    { goji: "nopalou tat", english: "twenty three", hausa: "ashirin ɗa uku", number: 23 },
+    { goji: "nopalou pereu", english: "twenty four", hausa: "ashirin ɗa huɗu", number: 24 },
+    { goji: "nopalou fuwat", english: "twenty five", hausa: "ashirin ɗa biyar", number: 25 },
+    { goji: "nopalou paragbana", english: "twenty six", hausa: "ashirin ɗa shida", number: 26 },
+    { goji: "nopalou parlau", english: "twenty seven", hausa: "ashirin ɗa bakwai", number: 27 },
+    { goji: "nopalou piɗidou", english: "twenty eight", hausa: "ashirin ɗa takwas", number: 28 },
+    { goji: "nopalou fejereu", english: "twenty nine", hausa: "ashirin ɗa tara", number: 29 },
+    
+    // Tens
+    { goji: "notat", english: "thirty", hausa: "talatin", number: 30 },
+    { goji: "nopereu", english: "forty", hausa: "arbain", number: 40 },
+    { goji: "nofuwat", english: "fifty", hausa: "amsin", number: 50 },
+    { goji: "noparagbana", english: "sixty", hausa: "sittin", number: 60 },
+    { goji: "noparlau", english: "seventy", hausa: "sabain", number: 70 },
+    { goji: "nopiɗidou", english: "eighty", hausa: "tamanin", number: 80 },
+    { goji: "nofejereu", english: "ninety", hausa: "tasain", number: 90 },
+    
+    // Hundreds
+    { goji: "shigɗo̱ƙ", english: "one hundred", hausa: "ɗari", number: 100 },
+    { goji: "shigpalou", english: "two hundred", hausa: "ɗari biyu", number: 200 },
+    { goji: "shigtat", english: "three hundred", hausa: "ɗari uku", number: 300 },
+    { goji: "shigpereu", english: "four hundred", hausa: "ɗari huɗu", number: 400 },
+    { goji: "shigfuwat", english: "five hundred", hausa: "ɗari biyar", number: 500 },
+    { goji: "shigparagbana", english: "six hundred", hausa: "ɗari shida", number: 600 },
+    { goji: "shigparlau", english: "seven hundred", hausa: "ɗari bakwai", number: 700 },
+    { goji: "shigpiɗidou", english: "eight hundred", hausa: "ɗari takwas", number: 800 },
+    { goji: "shigfejereu", english: "nine hundred", hausa: "ɗari tara", number: 900 },
+    
+    // Thousand
+    { goji: "ɗupɗo̱ƙ", english: "one thousand", hausa: "dubu", number: 1000 },
   ];
 
   const startQuiz = () => {
