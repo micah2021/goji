@@ -68,19 +68,33 @@ const ConversationManager = ({ onSelectConversation, selectedConversationId }: C
 
       if (error) throw error;
       
-      // Fetch creator profiles separately to avoid relation issues
+      // Fetch creator profiles separately and anonymize for public conversations
       const conversationsWithProfiles: Conversation[] = [];
       
       for (const conv of data || []) {
-        const { data: profileData } = await supabase
-          .from("profiles")
-          .select("username, full_name")
-          .eq("user_id", conv.creator_id)
-          .maybeSingle();
+        let profileData = { username: '', full_name: '' };
+        
+        // Only fetch real profile data for conversations the user created
+        // For public conversations, show anonymous data to protect privacy
+        if (conv.creator_id === user?.id) {
+          const { data: realProfileData } = await supabase
+            .from("profiles")
+            .select("username, full_name")
+            .eq("user_id", conv.creator_id)
+            .maybeSingle();
+          
+          profileData = realProfileData || { username: '', full_name: '' };
+        } else if (conv.conversation_type === 'general' || conv.conversation_type === 'public') {
+          // Anonymize public conversations to protect user privacy
+          profileData = { 
+            username: 'Community Member', 
+            full_name: 'Community Member' 
+          };
+        }
         
         conversationsWithProfiles.push({
           ...conv,
-          profiles: profileData || { username: '', full_name: '' }
+          profiles: profileData
         });
       }
       
