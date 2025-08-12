@@ -7,6 +7,7 @@ import TutorPage from "@/components/pages/TutorPage";
 import AboutPage from "@/components/pages/AboutPage";
 import ProfilePage from "@/components/pages/ProfilePage";
 import AuthPage from "@/components/auth/AuthPage";
+import gojiLogo from "@/assets/goji-logo.png";
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -16,7 +17,7 @@ const Index = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <img src="/goji-logo.png" alt="Goji" className="h-16 w-16 mx-auto mb-4 animate-pulse" />
+          <img src={gojiLogo} alt="Goji" className="h-16 w-16 mx-auto mb-4 animate-pulse" />
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
