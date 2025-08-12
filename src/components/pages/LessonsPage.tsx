@@ -21,6 +21,18 @@ interface Lesson {
 const LessonsPage = () => {
   const [lessons] = useState<Lesson[]>([
     {
+      id: "0",
+      title: "Traditions & Culture of Goji",
+      titleHa: "Al'adun da al'adun Goji",
+      description: "Learn about Goji cultural heritage and traditions",
+      descriptionHa: "Koyi game da tarihin al'adu da al'adun Goji",
+      difficulty: 'beginner',
+      duration: "15 min",
+      isCompleted: false,
+      isLocked: false,
+      progress: 0
+    },
+    {
       id: "1",
       title: "Basic Greetings",
       titleHa: "Gaisuwar Asali",
@@ -28,9 +40,9 @@ const LessonsPage = () => {
       descriptionHa: "Koyi muhimman gaisuwa a Goji",
       difficulty: 'beginner',
       duration: "10 min",
-      isCompleted: true,
+      isCompleted: false,
       isLocked: false,
-      progress: 100
+      progress: 0
     },
     {
       id: "2", 
