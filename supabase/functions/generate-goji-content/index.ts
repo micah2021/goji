@@ -73,7 +73,14 @@ Cultural Elements:
     });
 
     const data = await response.json();
-    const generatedContent = JSON.parse(data.choices[0].message.content);
+    let content = data.choices[0].message.content;
+    
+    // Remove markdown code blocks if present
+    if (content.includes('```json')) {
+      content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+    }
+    
+    const generatedContent = JSON.parse(content.trim());
 
     return new Response(JSON.stringify({ content: generatedContent }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
