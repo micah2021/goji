@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Search, Plus, Volume2, Users, Home, TreePine, Apple } from "lucide-react";
+import { Search, Plus, Volume2, Users, Home, TreePine, Apple, BookOpen } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -126,107 +127,311 @@ const DictionaryPage = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-foreground">Kamus Goji</h1>
-            <p className="text-sm text-muted-foreground">Goji Dictionary</p>
+            <p className="text-sm text-muted-foreground">Goji Dictionary & Grammar</p>
           </div>
           <Button size="sm" className="flex items-center space-x-2">
             <Plus className="h-4 w-4" />
             <span>Add Word</span>
           </Button>
         </div>
-        
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Find a word... / Nemo kalma..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 text-lg"
-          />
-        </div>
 
-        {/* Categories */}
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {categories.map((category) => (
-            <Button
-              key={category.id}
-              variant={selectedCategory === category.id ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory(category.id)}
-              className="flex items-center space-x-1 whitespace-nowrap"
-            >
-              <span>{category.emoji}</span>
-              <span className="hidden sm:inline">{category.name}</span>
-              <span className="sm:hidden">{category.nameHa}</span>
-            </Button>
-          ))}
-        </div>
-      </div>
+        <Tabs defaultValue="dictionary" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="dictionary">Dictionary • Kamus</TabsTrigger>
+            <TabsTrigger value="grammar">Grammar • Nahawu</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="dictionary" className="mt-6 space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Find a word... / Nemo kalma..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 text-lg"
+              />
+            </div>
 
-      {loading ? (
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">Loading dictionary...</p>
-          <p className="text-sm text-muted-foreground">Ana loda kamus...</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filteredEntries.map((entry) => (
-            <Card key={entry.id} className="p-4 hover:shadow-md transition-shadow">
+            {/* Categories */}
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {categories.map((category) => (
+                <Button
+                  key={category.id}
+                  variant={selectedCategory === category.id ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedCategory(category.id)}
+                  className="flex items-center space-x-1 whitespace-nowrap"
+                >
+                  <span>{category.emoji}</span>
+                  <span className="hidden sm:inline">{category.name}</span>
+                  <span className="sm:hidden">{category.nameHa}</span>
+                </Button>
+              ))}
+            </div>
+
+            {loading ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Loading dictionary...</p>
+                <p className="text-sm text-muted-foreground">Ana loda kamus...</p>
+              </div>
+            ) : (
               <div className="space-y-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold text-goji-earth mb-1">{entry.goji_text}</h3>
-                    <div className="space-y-1">
-                      {entry.english_translation && (
-                        <p className="text-sm text-foreground">
-                          <span className="font-medium text-goji-warm">English:</span> {entry.english_translation}
-                        </p>
-                      )}
-                      {entry.hausa_translation && (
-                        <p className="text-sm text-foreground">
-                          <span className="font-medium text-goji-warm">Hausa:</span> {entry.hausa_translation}
-                        </p>
-                      )}
-                      {entry.example_sentence && (
-                        <p className="text-xs text-muted-foreground italic">
-                          Example: {entry.example_sentence}
-                        </p>
-                      )}
+                {filteredEntries.map((entry) => (
+                  <Card key={entry.id} className="p-4 hover:shadow-md transition-shadow">
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-goji-earth mb-1">{entry.goji_text}</h3>
+                          <div className="space-y-1">
+                            {entry.english_translation && (
+                              <p className="text-sm text-foreground">
+                                <span className="font-medium text-goji-warm">English:</span> {entry.english_translation}
+                              </p>
+                            )}
+                            {entry.hausa_translation && (
+                              <p className="text-sm text-foreground">
+                                <span className="font-medium text-goji-warm">Hausa:</span> {entry.hausa_translation}
+                              </p>
+                            )}
+                            {entry.example_sentence && (
+                              <p className="text-xs text-muted-foreground italic">
+                                Example: {entry.example_sentence}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => playAudio(entry.audio_data, entry.goji_text)}
+                          className="flex items-center space-x-1 border-goji-warm text-goji-warm hover:bg-goji-warm hover:text-white"
+                        >
+                          <Volume2 className="h-4 w-4" />
+                          <span className="hidden sm:inline">Play</span>
+                        </Button>
+                      </div>
+                      
+                      <div className="flex items-center justify-between pt-2">
+                        <Badge variant="secondary" className="bg-goji-accent/20 text-goji-earth">
+                          {entry.goji_categories?.emoji} {entry.goji_categories?.name || 'general'}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          From 2006 Goji Document
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => playAudio(entry.audio_data, entry.goji_text)}
-                    className="flex items-center space-x-1 border-goji-warm text-goji-warm hover:bg-goji-warm hover:text-white"
-                  >
-                    <Volume2 className="h-4 w-4" />
-                    <span className="hidden sm:inline">Play</span>
-                  </Button>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {!loading && filteredEntries.length === 0 && (
+              <div className="text-center py-8 space-y-2">
+                <p className="text-muted-foreground">No words found</p>
+                <p className="text-sm text-muted-foreground">Ba a sami kalmomi ba</p>
+                <Button variant="outline" onClick={() => {setSearchTerm(""); setSelectedCategory("all")}}>
+                  Show All Words
+                </Button>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="grammar" className="mt-6">
+          <div className="space-y-6">
+            <Card className="p-6">
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <BookOpen className="h-5 w-5 text-goji-warm" />
+                  <h2 className="text-xl font-bold text-foreground">Noun Pluralization Rules</h2>
+                  <span className="text-sm text-muted-foreground">• Ka'idojin jam'i</span>
                 </div>
                 
-                <div className="flex items-center justify-between pt-2">
-                  <Badge variant="secondary" className="bg-goji-accent/20 text-goji-earth">
-                    {entry.goji_categories?.emoji} {entry.goji_categories?.name || 'general'}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    From 2006 Goji Document
-                  </span>
+                <div className="space-y-6">
+                  {/* Basic Rule */}
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-goji-earth">1. Basic Pluralization</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Most nouns use a number (ɗo̱ƙ, palou...) or "gbe" (many) after the noun.
+                    </p>
+                    <div className="grid gap-3">
+                      <Card className="p-3 bg-goji-accent/10">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-goji-earth">ɓai</span>
+                            <span className="text-sm text-muted-foreground">dog • kare</span>
+                          </div>
+                          <div className="text-sm space-y-1">
+                            <div><strong>ɓai ɗo̱ƙ</strong> = one dog • kare ɗaya</div>
+                            <div><strong>ɓai gbe</strong> = many dogs • karnuka</div>
+                          </div>
+                        </div>
+                      </Card>
+                      <Card className="p-3 bg-goji-accent/10">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-goji-earth">fe</span>
+                            <span className="text-sm text-muted-foreground">hen • kaza</span>
+                          </div>
+                          <div className="text-sm space-y-1">
+                            <div><strong>fe ɗo̱ƙ</strong> = one hen • kaza ɗaya</div>
+                            <div><strong>fe gbe</strong> = hens • kazuna</div>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+                  </div>
+
+                  {/* Special Rules */}
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-goji-earth">2. Special Ending Rules</h3>
+                    
+                    {/* Words ending in 'm' */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-goji-warm">Words ending in "m" → add "i"</h4>
+                      <Card className="p-3 bg-blue-50 dark:bg-blue-950/20">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">gburam</span>
+                            <span className="text-sm text-muted-foreground">wooden bed</span>
+                          </div>
+                          <div className="text-sm">
+                            <div><strong>gburami ɗo̱ƙ</strong> = one wooden bed</div>
+                            <div><strong>gburami gbe</strong> = many wooden beds</div>
+                          </div>
+                        </div>
+                      </Card>
+                      <Card className="p-3 bg-blue-50 dark:bg-blue-950/20">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">shirim</span>
+                            <span className="text-sm text-muted-foreground">fish • kifi</span>
+                          </div>
+                          <div className="text-sm">
+                            <div><strong>shirimi ɗo̱ƙ</strong> = one fish</div>
+                            <div><strong>shirimi gbe</strong> = many fish</div>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+
+                    {/* Words ending in 'o' */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-goji-warm">Words ending in "o" → add "wi"</h4>
+                      <Card className="p-3 bg-green-50 dark:bg-green-950/20">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">iro</span>
+                            <span className="text-sm text-muted-foreground">woven mat • tabarma</span>
+                          </div>
+                          <div className="text-sm">
+                            <div><strong>irowi ɗo̱ƙ</strong> = one woven mat</div>
+                            <div><strong>irowi gbe</strong> = many woven mats</div>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+
+                    {/* Words ending in 'ƙ' */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-goji-warm">Words ending in "ƙ" → change to "g" + add "i"</h4>
+                      <Card className="p-3 bg-orange-50 dark:bg-orange-950/20">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">ɓuƙ</span>
+                            <span className="text-sm text-muted-foreground">field • fili</span>
+                          </div>
+                          <div className="text-sm">
+                            <div><strong>ɓugi ɗo̱ƙ</strong> = one field</div>
+                            <div><strong>ɓugi gbe</strong> = many fields</div>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+
+                    {/* Words ending in 'a' */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-goji-warm">Words ending in "a" → add "i" (creates "ai")</h4>
+                      <Card className="p-3 bg-purple-50 dark:bg-purple-950/20">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">tanga</span>
+                            <span className="text-sm text-muted-foreground">cow • shanu</span>
+                          </div>
+                          <div className="text-sm">
+                            <div><strong>tangai ɗo̱ƙ</strong> = one cow</div>
+                            <div><strong>tangai gbe</strong> = many cows</div>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+                  </div>
+
+                  {/* Young forms */}
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-goji-earth">3. Young Forms</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Use "la" for singular young, "shibo" for plural young forms.
+                    </p>
+                    <div className="grid gap-3">
+                      <Card className="p-3 bg-yellow-50 dark:bg-yellow-950/20">
+                        <div className="space-y-2">
+                          <div className="text-sm space-y-1">
+                            <div><strong>la ɓai</strong> = young dog • kare</div>
+                            <div><strong>shibo ɓai</strong> = many young dogs • karnuka</div>
+                          </div>
+                        </div>
+                      </Card>
+                      <Card className="p-3 bg-yellow-50 dark:bg-yellow-950/20">
+                        <div className="space-y-2">
+                          <div className="text-sm space-y-1">
+                            <div><strong>la shuji</strong> = young boy • namiji</div>
+                            <div><strong>shibo shuji</strong> = many young boys • yamaza</div>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+                  </div>
+
+                  {/* Irregular forms */}
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-goji-earth">4. Irregular Forms</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Some nouns have special plural forms that don't follow the regular patterns.
+                    </p>
+                    <div className="grid gap-3">
+                      <Card className="p-3 bg-red-50 dark:bg-red-950/20">
+                        <div className="space-y-2">
+                          <div className="text-sm space-y-1">
+                            <div><strong>shuji</strong> = man • namiji</div>
+                            <div><strong>shuji gbe</strong> = many men • mazaje</div>
+                          </div>
+                        </div>
+                      </Card>
+                      <Card className="p-3 bg-red-50 dark:bg-red-950/20">
+                        <div className="space-y-2">
+                          <div className="text-sm space-y-1">
+                            <div><strong>niyo</strong> = person • mutum</div>
+                            <div><strong>memme</strong> = people • mutane</div>
+                          </div>
+                        </div>
+                      </Card>
+                      <Card className="p-3 bg-red-50 dark:bg-red-950/20">
+                        <div className="space-y-2">
+                          <div className="text-sm space-y-1">
+                            <div><strong>poomun</strong> = woman • mace</div>
+                            <div><strong>sherep</strong> = many women • mataye</div>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+                  </div>
                 </div>
               </div>
             </Card>
-          ))}
-        </div>
-      )}
-
-      {!loading && filteredEntries.length === 0 && (
-        <div className="text-center py-8 space-y-2">
-          <p className="text-muted-foreground">No words found</p>
-          <p className="text-sm text-muted-foreground">Ba a sami kalmomi ba</p>
-          <Button variant="outline" onClick={() => {setSearchTerm(""); setSelectedCategory("all")}}>
-            Show All Words
-          </Button>
-        </div>
-      )}
+          </div>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };
