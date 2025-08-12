@@ -35,6 +35,18 @@ const LessonsPage = () => {
       progress: 0
     },
     {
+      id: "0.5",
+      title: "Short Stories",
+      titleHa: "Gajerun Labarai",
+      description: "Traditional Goji stories and tales",
+      descriptionHa: "Labarun gargajiya na Goji",
+      difficulty: 'beginner',
+      duration: "12 min",
+      isCompleted: false,
+      isLocked: false,
+      progress: 0
+    },
+    {
       id: "1",
       title: "Basic Greetings",
       titleHa: "Gaisuwar Asali",
