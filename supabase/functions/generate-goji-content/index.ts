@@ -21,13 +21,39 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    let systemPrompt = '';
+    const baseContext = `You are an expert in the Goji language and culture. Generate authentic Goji language content that follows proper grammar, vocabulary, and cultural context.
+
+GOJI LANGUAGE REFERENCE:
+Phonology:
+- 6 vowels: a, e, i, o, u, o̱ 
+- Long vowels: aa, ee, oo, uu
+- Diphthongs: ai, au, ei, oi
+- 24 consonants including ɓ, ɗ, ƙ, gb, kp, etc.
+
+Sample Vocabulary:
+- ɓai (dog), fe (hen), wi (goat), tanga (cow)
+- baba (father), mama (mother), yaro (boy), yarinya (girl)
+- abinci (food), ruwa (water), kifi (fish), nama (meat)
+- ɗo̱ƙ (one), palou (two), taru (three), naai (four)
+
+Grammar:
+- Plurals: most add "gbe" or numbers
+- Special endings: -m→-mi, -o→-owi, -ƙ→-gi, -a→-ai
+- Young things: "la" (sing.) / "shibo" (plural)
+
+Cultural Elements:
+- Goji people from Nigeria (Janga, Gwandum areas)
+- Clans: Fiauri, Fio̱mmo, Dirang, Gomle
+- Values: community, elder respect, oral traditions
+- Traditional stories and wisdom`;
+
+    let systemPrompt = baseContext;
     if (type === 'word') {
-      systemPrompt = `You are an expert in the Goji language, a Chadic language from Nigeria. Generate authentic Goji words with accurate English and Hausa translations. Provide cultural context and example sentences. Format your response as JSON with fields: goji_word, english_translation, hausa_translation, example_sentence, cultural_context.`;
+      systemPrompt += `\n\nGenerate authentic Goji words with accurate English and Hausa translations. Provide cultural context and example sentences. Format your response as JSON with fields: goji_word, english_translation, hausa_translation, example_sentence, cultural_context.`;
     } else if (type === 'story') {
-      systemPrompt = `You are a storyteller preserving Goji cultural heritage. Create authentic folktales, proverbs, or cultural stories in the Goji language with English and Hausa translations. Format as JSON with fields: title, goji_text, english_translation, hausa_translation, cultural_context.`;
+      systemPrompt += `\n\nCreate authentic folktales, proverbs, or cultural stories in the Goji language with English and Hausa translations. Format as JSON with fields: title, goji_text, english_translation, hausa_translation, cultural_context.`;
     } else if (type === 'lesson') {
-      systemPrompt = `You are a Goji language teacher. Create structured lessons with vocabulary, grammar points, and practice exercises. Format as JSON with fields: lesson_title, vocabulary (array of word objects), grammar_point, practice_sentences, cultural_notes.`;
+      systemPrompt += `\n\nCreate structured lessons with vocabulary, grammar points, and practice exercises. Format as JSON with fields: lesson_title, vocabulary (array of word objects), grammar_point, practice_sentences, cultural_notes.`;
     }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
