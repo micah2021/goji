@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LessonsPage from "./LessonsPage";
 import DictionaryPage from "./DictionaryPage";
+import PhonologyPage from "./PhonologyPage";
 
 const LearnPage = () => {
   return (
@@ -14,9 +15,10 @@ const LearnPage = () => {
       </div>
 
       <Tabs defaultValue="lessons" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="lessons">Lessons • Darussai</TabsTrigger>
           <TabsTrigger value="dictionary">Dictionary • Kamus</TabsTrigger>
+          <TabsTrigger value="phonology">Sounds • Eleparo</TabsTrigger>
         </TabsList>
         
         <TabsContent value="lessons" className="mt-0">
@@ -25,6 +27,10 @@ const LearnPage = () => {
         
         <TabsContent value="dictionary" className="mt-0">
           <DictionaryPage />
+        </TabsContent>
+        
+        <TabsContent value="phonology" className="mt-0">
+          <PhonologyPage />
         </TabsContent>
       </Tabs>
     </div>
