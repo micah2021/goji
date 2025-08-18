@@ -112,7 +112,7 @@ const VoiceRecorder = ({ conversationId, onAudioSent, disabled }: VoiceRecorderP
     try {
       // Upload to Supabase Storage
       const fileName = `audio_${Date.now()}_${user.id}.webm`;
-      const filePath = `conversations/${conversationId}/${fileName}`;
+      const filePath = `${user.id}/conversations/${conversationId}/${fileName}`;
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('chat-audio')

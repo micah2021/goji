@@ -160,7 +160,7 @@ export const AILanguageTutor = () => {
       </div>
 
       <Card className="w-full max-w-4xl mx-auto h-[600px] flex flex-col">
-        <CardHeader>
+        <CardHeader className="flex-shrink-0">
           <CardTitle className="flex items-center gap-2">
             <MessageCircle className="w-5 h-5" />
             AI Goji Language Tutor
@@ -173,9 +173,9 @@ export const AILanguageTutor = () => {
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="flex-1 flex flex-col space-y-4">
-          <ScrollArea className="flex-1 pr-4">
-            <div className="space-y-4">
+        <CardContent className="flex-1 flex flex-col min-h-0">
+          <ScrollArea className="flex-1 pr-4 mb-4">
+            <div className="space-y-4 pb-4">
               {messages.map((message, index) => (
                 <div
                   key={index}
@@ -205,7 +205,7 @@ export const AILanguageTutor = () => {
             </div>
           </ScrollArea>
 
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 flex-shrink-0">
             <Input
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
