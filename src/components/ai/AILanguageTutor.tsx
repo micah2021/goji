@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { MessageCircle, Send, Mic, BookOpen, Volume2, Lightbulb } from "lucide-react";
 
 interface Message {
@@ -15,6 +16,7 @@ interface Message {
 }
 
 export const AILanguageTutor = () => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
@@ -56,11 +58,12 @@ export const AILanguageTutor = () => {
         contextPrompt += ' (Focus on Goji culture, traditions, and stories)';
       }
 
-      const { data, error } = await supabase.functions.invoke('ai-language-tutor', {
-        body: {
+      const { data, error } = await supabase.functions.invoke('enhanced-ai-tutor', {
+        body: { 
           userInput: contextPrompt,
           conversationHistory,
-          lesson_context: `Goji language learning - ${currentMode} mode`
+          userId: user?.id,
+          lessonContext: `Goji language learning - ${currentMode} mode`
         }
       });
 
@@ -73,6 +76,14 @@ export const AILanguageTutor = () => {
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+
+      // Show context information if available
+      if (data.context_used && (data.context_used.dictionary_matches > 0 || data.context_used.cultural_matches > 0)) {
+        toast({
+          title: "Enhanced response",
+          description: `Found ${data.context_used.dictionary_matches} vocabulary matches and ${data.context_used.cultural_matches} cultural contexts.`,
+        });
+      }
     } catch (error) {
       toast({
         title: "Error communicating with tutor",

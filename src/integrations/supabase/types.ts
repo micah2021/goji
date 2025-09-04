@@ -1817,6 +1817,31 @@ export type Database = {
           votes_for: number
         }[]
       }
+      get_learner_progress: {
+        Args: { learner_user_id: string }
+        Returns: {
+          average_pronunciation_score: number
+          improvement_areas: string[]
+          preferred_topics: string[]
+          streak_days: number
+          total_study_time_minutes: number
+          vocabulary_familiar: number
+          vocabulary_learning: number
+          vocabulary_mastered: number
+        }[]
+      }
+      get_personalized_recommendations: {
+        Args: { learner_user_id: string; recommendation_count?: number }
+        Returns: {
+          difficulty_level: string
+          english_translation: string
+          goji_word: string
+          hausa_translation: string
+          id: string
+          priority_score: number
+          recommendation_reason: string
+        }[]
+      }
       get_weather_data: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -1892,6 +1917,64 @@ export type Database = {
         Args: { contribution_id: string }
         Returns: Json
       }
+      match_cultural_contexts: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          clan_associations: string[]
+          context_type: string
+          cultural_significance: string
+          description: string
+          difficulty_level: string
+          english_content: string
+          geographical_region: string
+          goji_content: string
+          hausa_content: string
+          id: string
+          similarity: number
+          title: string
+        }[]
+      }
+      match_dictionary_entries: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          cultural_context: string
+          difficulty_level: string
+          english_translation: string
+          example_sentence: string
+          goji_word: string
+          hausa_translation: string
+          id: string
+          pronunciation_guide: string
+          similarity: number
+          usage_frequency: number
+        }[]
+      }
+      match_learning_data: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          content: string
+          data_type: string
+          difficulty_level: string
+          id: string
+          language_pair: string
+          learning_category: string
+          quality_score: number
+          semantic_tags: string[]
+          similarity: number
+        }[]
+      }
       sparsevec_out: {
         Args: { "": unknown }
         Returns: unknown
@@ -1903,6 +1986,16 @@ export type Database = {
       sparsevec_typmod_in: {
         Args: { "": unknown[] }
         Returns: number
+      }
+      update_vocabulary_mastery: {
+        Args: {
+          learner_user_id: string
+          pronunciation_score?: number
+          response_time_ms: number
+          was_correct: boolean
+          word_id: string
+        }
+        Returns: undefined
       }
       validate_newsletter_token: {
         Args: { _email: string; _token: string }

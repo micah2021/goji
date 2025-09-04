@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Plus, Volume2, Users, Home, TreePine, Apple, BookOpen } from "lucide-react";
+import { Search, Plus, Volume2, Users, Home, TreePine, Apple, BookOpen, Database } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { BulkImportDialog } from "@/components/dictionary/BulkImportDialog";
 
 interface DictionaryEntry {
   id: string;
@@ -44,10 +45,46 @@ const DictionaryPage = () => {
 
   const fetchEntries = async () => {
     try {
-      // Preloaded words from the 2006 document
-      const gojiWords: DictionaryEntry[] = [
-        // People & Family
-        { id: "1", goji_text: "niyo", english_translation: "person", hausa_translation: "mutum", category_id: "people", audio_data: null, goji_categories: { name: "people", emoji: "👨‍🌾" } },
+      // Fetch entries from database
+      const { data, error } = await supabase
+        .from('dictionary_entries')
+        .select(`
+          id,
+          goji_word,
+          english_translation,
+          hausa_translation,
+          example_sentence,
+          cultural_context,
+          pronunciation_guide,
+          difficulty_level,
+          usage_frequency
+        `)
+        .order('usage_frequency', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform database entries to component format
+      const transformedEntries = data?.map(entry => ({
+        id: entry.id,
+        goji_text: entry.goji_word,
+        english_translation: entry.english_translation,
+        hausa_translation: entry.hausa_translation,
+        category_id: categorizeWord(entry.goji_word),
+        audio_data: null, // Audio will be generated/fetched separately
+        example_sentence: entry.example_sentence,
+        pronunciation_guide: entry.pronunciation_guide,
+        difficulty_level: entry.difficulty_level,
+        goji_categories: {
+          name: categorizeWord(entry.goji_word),
+          emoji: getCategoryEmoji(categorizeWord(entry.goji_word))
+        }
+      })) || [];
+
+      // If no entries in database, show fallback message
+      if (transformedEntries.length === 0) {
+        // Load some default entries for demonstration
+        const fallbackWords: DictionaryEntry[] = [
+          { id: "1", goji_text: "niyo", english_translation: "person", hausa_translation: "mutum", category_id: "people", audio_data: null, goji_categories: { name: "people", emoji: "👨‍🌾" } },
         { id: "2", goji_text: "shuji", english_translation: "father", hausa_translation: "uba", category_id: "people", audio_data: null, goji_categories: { name: "people", emoji: "👨‍🌾" } },
         { id: "3", goji_text: "poomun", english_translation: "wife", hausa_translation: "mata", category_id: "people", audio_data: null, goji_categories: { name: "people", emoji: "👨‍🌾" } },
         { id: "4", goji_text: "memme", english_translation: "people", hausa_translation: "mutane", category_id: "people", audio_data: null, goji_categories: { name: "people", emoji: "👨‍🌾" } },
@@ -86,15 +123,48 @@ const DictionaryPage = () => {
         { id: "27", goji_text: "tat", english_translation: "three", hausa_translation: "uku", category_id: "numbers", audio_data: null, goji_categories: { name: "numbers", emoji: "🔢" } },
         { id: "28", goji_text: "kpomu", english_translation: "ten", hausa_translation: "goma", category_id: "numbers", audio_data: null, goji_categories: { name: "numbers", emoji: "🔢" } },
         { id: "29", goji_text: "fuwat", english_translation: "five", hausa_translation: "biyar", category_id: "numbers", audio_data: null, goji_categories: { name: "numbers", emoji: "🔢" } },
-        { id: "30", goji_text: "parabanan", english_translation: "six", hausa_translation: "shida", category_id: "numbers", audio_data: null, goji_categories: { name: "numbers", emoji: "🔢" } },
-      ];
-      
-      setEntries(gojiWords);
+        ];
+        setEntries(fallbackWords);
+        toast({ title: "Using demo data", description: "No dictionary entries found in database. Upload your words using the bulk import feature." });
+      } else {
+        setEntries(transformedEntries);
+      }
     } catch (error) {
       toast({ title: "Error", description: "Could not load dictionary entries", variant: "destructive" });
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper functions for categorization
+  const categorizeWord = (word: string): string => {
+    const familyWords = ['shuji', 'poomun', 'niyo', 'memme', 'lano'];
+    const animalWords = ['wi', 'fe', 'ɓai', 'jango̱ni'];
+    const homeWords = ['mina', 'pomina', 'telan', 'gburam', 'dummo̱'];
+    const natureWords = ['biro', 'ɗo', 'shela', 'daran', 'tere'];
+    const foodWords = ['wechina', 'lo̱', 'chanye', 'komo'];
+    const numberWords = ['ɗo̱ƙ', 'palou', 'tat', 'kpomu', 'fuwat', 'parabanan'];
+
+    if (familyWords.includes(word)) return 'people';
+    if (animalWords.includes(word)) return 'animals';
+    if (homeWords.includes(word)) return 'home';
+    if (natureWords.includes(word)) return 'nature';
+    if (foodWords.includes(word)) return 'food';
+    if (numberWords.includes(word)) return 'numbers';
+    return 'general';
+  };
+
+  const getCategoryEmoji = (category: string): string => {
+    const emojiMap = {
+      people: '👨‍🌾',
+      animals: '🐐',
+      home: '🏠',
+      nature: '🌳',
+      food: '🍲',
+      numbers: '🔢',
+      general: '📚'
+    };
+    return emojiMap[category as keyof typeof emojiMap] || '📚';
   };
 
   const playAudio = (audioData: string | null, word: string) => {
@@ -129,10 +199,13 @@ const DictionaryPage = () => {
             <h1 className="text-2xl font-bold text-foreground">Kamus Goji</h1>
             <p className="text-sm text-muted-foreground">Goji Dictionary & Grammar</p>
           </div>
-          <Button size="sm" className="flex items-center space-x-2">
-            <Plus className="h-4 w-4" />
-            <span>Add Word</span>
-          </Button>
+          <div className="flex gap-2">
+            <BulkImportDialog onImportComplete={fetchEntries} />
+            <Button size="sm" className="flex items-center space-x-2">
+              <Plus className="h-4 w-4" />
+              <span>Add Word</span>
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="dictionary" className="w-full">
