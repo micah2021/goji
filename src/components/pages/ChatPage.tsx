@@ -10,9 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Send, Trash2, Brain, BarChart3, Menu } from "lucide-react";
+import { Send, Trash2, Brain, Menu } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import ConversationManager from "@/components/chat/ConversationManager";
 import VoiceRecorder from "@/components/chat/VoiceRecorder";
 
 interface Message {
@@ -47,7 +46,7 @@ const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedConversationId, setSelectedConversationId] = useState<string | undefined>();
+  const [communityConversationId, setCommunityConversationId] = useState<string | undefined>();
   const [aiLearningData, setAiLearningData] = useState<AILearningData[]>([]);
   const [showAIInsights, setShowAIInsights] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -55,45 +54,45 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (user) {
-      fetchDefaultConversation();
+      fetchCommunityConversation();
       fetchAILearningData();
     }
   }, [user]);
 
   useEffect(() => {
-    if (selectedConversationId) {
+    if (communityConversationId) {
       fetchMessages();
       subscribeToMessages();
     }
-  }, [selectedConversationId]);
+  }, [communityConversationId]);
 
-  const fetchDefaultConversation = async () => {
-    console.log('Fetching default conversation for user:', user?.id);
+  const fetchCommunityConversation = async () => {
+    console.log('Fetching community conversation for user:', user?.id);
     
     try {
-      // Get or create a default "General Chat" conversation
+      // Get or create the community chat conversation
       let { data, error } = await supabase
         .from("conversations")
         .select("id")
-        .eq("title", "General Chat")
-        .eq("conversation_type", "general")
+        .eq("title", "Goji Community Chat")
+        .eq("conversation_type", "public")
         .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching default conversation:', error);
+        console.error('Error fetching community conversation:', error);
         throw error;
       }
 
       if (!data && user) {
-        console.log('Creating default conversation');
-        // Create default conversation
+        console.log('Creating community conversation');
+        // Create community conversation
         const { data: newConv, error: createError } = await supabase
           .from("conversations")
           .insert({
-            title: "General Chat",
-            description: "Main conversation for Goji language enthusiasts",
+            title: "Goji Community Chat",
+            description: "Community chat for all Goji language learners and speakers",
             creator_id: user.id,
-            conversation_type: "general",
+            conversation_type: "public",
             difficulty_level: "beginner",
             is_active: true,
             message_count: 0,
@@ -103,32 +102,32 @@ const ChatPage = () => {
           .single();
 
         if (createError) {
-          console.error('Error creating default conversation:', createError);
+          console.error('Error creating community conversation:', createError);
           throw createError;
         }
         data = newConv;
       }
 
       if (data) {
-        console.log('Setting default conversation:', data.id);
-        setSelectedConversationId(data.id);
+        console.log('Setting community conversation:', data.id);
+        setCommunityConversationId(data.id);
       } else {
         console.log('No conversation found or created');
       }
     } catch (error) {
-      console.error('Failed to load default conversation:', error);
+      console.error('Failed to load community conversation:', error);
       toast({
         title: "Error",
-        description: "Failed to load default conversation. Please try refreshing the page.",
+        description: "Failed to load community chat. Please try refreshing the page.",
         variant: "destructive"
       });
     }
   };
 
   const fetchMessages = async () => {
-    if (!selectedConversationId) return;
+    if (!communityConversationId) return;
 
-    console.log('Fetching messages for conversation:', selectedConversationId);
+    console.log('Fetching messages for conversation:', communityConversationId);
     
     try {
       const { data, error } = await supabase
@@ -141,7 +140,7 @@ const ChatPage = () => {
             role
           )
         `)
-        .eq("conversation_id", selectedConversationId)
+        .eq("conversation_id", communityConversationId)
         .order("created_at", { ascending: true })
         .limit(100);
 
@@ -179,19 +178,19 @@ const ChatPage = () => {
   };
 
   const subscribeToMessages = () => {
-    if (!selectedConversationId) return;
+    if (!communityConversationId) return;
 
-    console.log('Setting up message subscription for conversation:', selectedConversationId);
+    console.log('Setting up message subscription for conversation:', communityConversationId);
 
     const channel = supabase
-      .channel(`messages-${selectedConversationId}`)
+      .channel(`messages-${communityConversationId}`)
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
           table: 'messages',
-          filter: `conversation_id=eq.${selectedConversationId}`
+          filter: `conversation_id=eq.${communityConversationId}`
         },
         async (payload) => {
           console.log('New message received:', payload);
@@ -255,7 +254,7 @@ const ChatPage = () => {
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !user || !selectedConversationId) return;
+    if (!newMessage.trim() || !user || !communityConversationId) return;
 
     setIsLoading(true);
     try {
@@ -265,7 +264,7 @@ const ChatPage = () => {
           user_id: user.id,
           text: newMessage.trim(),
           tags: "general",
-          conversation_id: selectedConversationId
+          conversation_id: communityConversationId
         });
 
       if (error) throw error;
@@ -319,16 +318,25 @@ const ChatPage = () => {
 
   const SidebarContent = () => (
     <div className="h-full p-4">
-      <ConversationManager 
-        onSelectConversation={(id) => {
-          setSelectedConversationId(id);
-          if (isMobile) setSidebarOpen(false);
-        }}
-        selectedConversationId={selectedConversationId}
-      />
+      {/* Community Info */}
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">Goji Community</h2>
+        <Card className="p-3">
+          <div className="text-center space-y-2">
+            <div className="text-2xl">🌍</div>
+            <p className="text-sm font-medium">Community Chat</p>
+            <p className="text-xs text-muted-foreground">
+              Practice Goji with learners and native speakers from around the world
+            </p>
+            <Badge variant="secondary" className="text-xs">
+              {messages.length} messages today
+            </Badge>
+          </div>
+        </Card>
+      </div>
       
       {/* AI Learning Insights */}
-      <div className="mt-6">
+      <div>
         <Button
           variant="outline"
           size="sm"
@@ -385,7 +393,7 @@ const ChatPage = () => {
 
       {/* Main chat area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {selectedConversationId ? (
+        {communityConversationId ? (
           <>
             <div className="p-4 border-b bg-card">
               <div className="flex items-center gap-3">
@@ -399,11 +407,11 @@ const ChatPage = () => {
                   </Sheet>
                 )}
                 <div className="flex-1 min-w-0">
-                  <h1 className={`font-semibold ${isMobile ? 'text-lg' : 'text-xl'}`}>
-                    Goji Language Chat
+                  <h1 className={`font-semibold ${isMobile ? 'text-lg' : 'text-xl'} flex items-center gap-2`}>
+                    🌍 Goji Community Chat
                   </h1>
                   <p className="text-sm text-muted-foreground truncate">
-                    Practice with native speakers • AI-powered learning
+                    Community chat for Goji language learners worldwide
                   </p>
                 </div>
               </div>
@@ -477,7 +485,7 @@ const ChatPage = () => {
                   className={`flex-1 ${isMobile ? 'text-sm h-9' : ''}`}
                 />
                 <VoiceRecorder
-                  conversationId={selectedConversationId}
+                  conversationId={communityConversationId}
                   onAudioSent={() => {}}
                   disabled={isLoading}
                 />
@@ -491,7 +499,7 @@ const ChatPage = () => {
               </form>
               {!isMobile && (
                 <p className="text-xs text-muted-foreground mt-2">
-                  Your conversations help train AI to better understand Goji language
+                  Welcome to the Goji community! Share your learning journey and connect with others.
                 </p>
               )}
             </div>
@@ -499,11 +507,11 @@ const ChatPage = () => {
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center space-y-4">
-              <BarChart3 className="h-12 w-12 mx-auto text-muted-foreground" />
+              <div className="text-4xl">🌍</div>
               <div>
-                <h3 className="text-lg font-semibold">Select a Conversation</h3>
-                <p className="text-muted-foreground">
-                  Choose a conversation from the sidebar to start chatting
+                <h2 className="text-lg font-semibold">Loading Community Chat</h2>
+                <p className="text-sm text-muted-foreground">
+                  Connecting you to the Goji language community...
                 </p>
               </div>
             </div>
