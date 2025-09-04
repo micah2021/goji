@@ -1178,6 +1178,103 @@ export type Database = {
         }
         Relationships: []
       }
+      health_metrics: {
+        Row: {
+          id: string
+          metric_type: string
+          notes: string | null
+          recorded_at: string
+          unit: string
+          user_id: string
+          value_1: number
+          value_2: number | null
+        }
+        Insert: {
+          id?: string
+          metric_type: string
+          notes?: string | null
+          recorded_at?: string
+          unit: string
+          user_id: string
+          value_1: number
+          value_2?: number | null
+        }
+        Update: {
+          id?: string
+          metric_type?: string
+          notes?: string | null
+          recorded_at?: string
+          unit?: string
+          user_id?: string
+          value_1?: number
+          value_2?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "health_metrics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      health_profiles: {
+        Row: {
+          allergies: string[] | null
+          blood_type: string | null
+          chronic_conditions: string[] | null
+          created_at: string
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relationship: string | null
+          height_cm: number | null
+          id: string
+          medical_notes: string | null
+          updated_at: string
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          allergies?: string[] | null
+          blood_type?: string | null
+          chronic_conditions?: string[] | null
+          created_at?: string
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          height_cm?: number | null
+          id?: string
+          medical_notes?: string | null
+          updated_at?: string
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          allergies?: string[] | null
+          blood_type?: string | null
+          chronic_conditions?: string[] | null
+          created_at?: string
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          height_cm?: number | null
+          id?: string
+          medical_notes?: string | null
+          updated_at?: string
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "health_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       institutional_orders: {
         Row: {
           budget_range: string | null
@@ -1353,6 +1450,107 @@ export type Database = {
           weaknesses?: string[] | null
         }
         Relationships: []
+      }
+      medication_reminders: {
+        Row: {
+          created_at: string
+          id: string
+          medication_id: string
+          notes: string | null
+          scheduled_time: string
+          status: string
+          taken_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          medication_id: string
+          notes?: string | null
+          scheduled_time: string
+          status?: string
+          taken_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          medication_id?: string
+          notes?: string | null
+          scheduled_time?: string
+          status?: string
+          taken_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medication_reminders_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medication_reminders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medications: {
+        Row: {
+          created_at: string
+          dosage: string
+          end_date: string | null
+          frequency: string
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          start_date: string
+          time_slots: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dosage: string
+          end_date?: string | null
+          frequency: string
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          start_date: string
+          time_slots?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dosage?: string
+          end_date?: string | null
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          start_date?: string
+          time_slots?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       messages: {
         Row: {
