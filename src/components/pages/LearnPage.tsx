@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LessonsPage from "./LessonsPage";
 import DictionaryPage from "./DictionaryPage";
 import PhonologyPage from "./PhonologyPage";
+import VocabularyLearning from "../learner/VocabularyLearning";
 
 const LearnPage = () => {
   return (
@@ -14,12 +15,17 @@ const LearnPage = () => {
         </p>
       </div>
 
-      <Tabs defaultValue="lessons" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="lessons">Lessons • Darussai</TabsTrigger>
-          <TabsTrigger value="dictionary">Dictionary • Kamus</TabsTrigger>
-          <TabsTrigger value="phonology">Sounds • Eleparo</TabsTrigger>
+      <Tabs defaultValue="vocabulary" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="vocabulary">Vocabulary</TabsTrigger>
+          <TabsTrigger value="lessons">Lessons</TabsTrigger>
+          <TabsTrigger value="dictionary">Dictionary</TabsTrigger>
+          <TabsTrigger value="phonology">Sounds</TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="vocabulary" className="mt-0">
+          <VocabularyLearning />
+        </TabsContent>
         
         <TabsContent value="lessons" className="mt-0">
           <LessonsPage />
