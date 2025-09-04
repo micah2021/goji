@@ -30,6 +30,7 @@ export const AILanguageTutor = () => {
   const { toast } = useToast();
 
   const handleSendMessage = async () => {
+    console.log('handleSendMessage called with input:', inputMessage);
     if (!inputMessage.trim()) return;
 
     const userMessage: Message = {
@@ -43,6 +44,7 @@ export const AILanguageTutor = () => {
     setIsLoading(true);
 
     try {
+      console.log('Starting AI tutor request...');
       const conversationHistory = messages.map(msg => ({
         role: msg.role,
         content: msg.content
@@ -58,6 +60,12 @@ export const AILanguageTutor = () => {
         contextPrompt += ' (Focus on Goji culture, traditions, and stories)';
       }
 
+      console.log('Calling enhanced-ai-tutor with:', {
+        userInput: contextPrompt,
+        userId: user?.id,
+        mode: currentMode
+      });
+
       const { data, error } = await supabase.functions.invoke('enhanced-ai-tutor', {
         body: { 
           userInput: contextPrompt,
@@ -66,6 +74,8 @@ export const AILanguageTutor = () => {
           lessonContext: `Goji language learning - ${currentMode} mode`
         }
       });
+
+      console.log('Function response:', { data, error });
 
       if (error) throw error;
 
@@ -85,6 +95,7 @@ export const AILanguageTutor = () => {
         });
       }
     } catch (error) {
+      console.error('AI tutor error:', error);
       toast({
         title: "Error communicating with tutor",
         description: "Please try again later.",
