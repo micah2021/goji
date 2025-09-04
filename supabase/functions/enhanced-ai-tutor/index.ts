@@ -40,34 +40,44 @@ async function generateEmbedding(text: string): Promise<number[]> {
 
 // Perform semantic search using vector similarity
 async function performSemanticSearch(supabase: any, query: string, limit = 5) {
-  const queryEmbedding = await generateEmbedding(query);
-  
-  // Search dictionary entries
-  const { data: dictionaryResults } = await supabase.rpc('search_dictionary_semantic', {
-    query_embedding: queryEmbedding,
-    match_threshold: 0.7,
-    match_count: limit
-  });
+  try {
+    const queryEmbedding = await generateEmbedding(query);
+    
+    // Search dictionary entries
+    const { data: dictionaryResults } = await supabase.rpc('match_dictionary_entries', {
+      query_embedding: queryEmbedding,
+      match_threshold: 0.7,
+      match_count: limit
+    });
 
-  // Search cultural contexts
-  const { data: culturalResults } = await supabase.rpc('search_cultural_contexts', {
-    query_embedding: queryEmbedding,
-    match_threshold: 0.7,
-    match_count: limit
-  });
+    // Search cultural contexts
+    const { data: culturalResults } = await supabase.rpc('match_cultural_contexts', {
+      query_embedding: queryEmbedding,
+      match_threshold: 0.7,
+      match_count: limit
+    });
 
-  // Search AI learning data
-  const { data: learningResults } = await supabase.rpc('search_learning_data', {
-    query_embedding: queryEmbedding,
-    match_threshold: 0.7,
-    match_count: limit
-  });
+    // Search AI learning data
+    const { data: learningResults } = await supabase.rpc('match_learning_data', {
+      query_embedding: queryEmbedding,
+      match_threshold: 0.7,
+      match_count: limit
+    });
 
-  return {
-    dictionary: dictionaryResults || [],
-    cultural: culturalResults || [],
-    learning: learningResults || []
-  };
+    return {
+      dictionary: dictionaryResults || [],
+      cultural: culturalResults || [],
+      learning: learningResults || []
+    };
+  } catch (error) {
+    console.error('Semantic search error:', error);
+    // Return empty results if search fails
+    return {
+      dictionary: [],
+      cultural: [],
+      learning: []
+    };
+  }
 }
 
 serve(async (req) => {
@@ -173,6 +183,15 @@ ADAPTIVE TEACHING APPROACH:
 
 Current lesson context: ${lessonContext || 'General conversation'}
 
+${searchResults.dictionary.length === 0 && searchResults.cultural.length === 0 ? `
+IMPORTANT FALLBACK: Since no specific database matches were found, use your comprehensive Goji knowledge above to provide helpful responses. Always be encouraging and provide practical examples. Focus on:
+- Teaching basic vocabulary and pronunciation
+- Explaining grammar patterns
+- Sharing cultural insights
+- Providing encouragement and practice suggestions
+- Using the learner's native language when helpful
+` : ''}
+
 Be encouraging, culturally sensitive, and adapt to the learner's pace and interests.`;
 
     const messages = [
@@ -181,6 +200,8 @@ Be encouraging, culturally sensitive, and adapt to the learner's pace and intere
       { role: 'user', content: userInput }
     ];
 
+    console.log('Calling OpenAI with messages:', messages.length, 'messages');
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -188,13 +209,21 @@ Be encouraging, culturally sensitive, and adapt to the learner's pace and intere
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-2025-08-07',
+        model: 'gpt-4o-mini',
         messages,
-        max_completion_tokens: 800,
+        max_tokens: 800,
+        temperature: 0.7,
       }),
     });
 
     const data = await response.json();
+    console.log('OpenAI response:', data);
+    
+    if (!data.choices || !data.choices[0]) {
+      console.error('Invalid OpenAI response:', data);
+      throw new Error('Invalid response from OpenAI');
+    }
+    
     const tutorResponse = data.choices[0].message.content;
 
     // Generate conversation analytics

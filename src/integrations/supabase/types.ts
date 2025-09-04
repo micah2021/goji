@@ -1795,6 +1795,10 @@ export type Database = {
         Args: { _email: string }
         Returns: boolean
       }
+      generate_embeddings_for_dictionary: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       generate_newsletter_confirmation_token: {
         Args: Record<PropertyKey, never>
         Returns: string

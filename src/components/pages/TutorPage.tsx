@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AILanguageTutor } from "@/components/ai/AILanguageTutor";
 import { AIContentGenerator } from "@/components/ai/AIContentGenerator";
+import { GenerateEmbeddingsButton } from "@/components/ai/GenerateEmbeddingsButton";
 import { Brain, Sparkles } from "lucide-react";
 
 const TutorPage = () => {
@@ -15,6 +16,9 @@ const TutorPage = () => {
           <p className="text-muted-foreground">
             Learn Goji with AI-powered tutoring and content generation
           </p>
+          <div className="mt-4">
+            <GenerateEmbeddingsButton />
+          </div>
         </div>
 
         <Tabs defaultValue="tutor" className="w-full">
