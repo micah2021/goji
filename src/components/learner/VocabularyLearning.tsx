@@ -20,7 +20,7 @@ interface DictionaryEntry {
 const VocabularyLearning = () => {
   const [entries, setEntries] = useState<DictionaryEntry[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('beginner');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [loading, setLoading] = useState(true);
 
   const categories = [
@@ -35,6 +35,7 @@ const VocabularyLearning = () => {
   ];
 
   const difficulties = [
+    { value: 'all', label: 'All Levels' },
     { value: 'beginner', label: 'Beginner' },
     { value: 'intermediate', label: 'Intermediate' },
     { value: 'advanced', label: 'Advanced' }
@@ -50,9 +51,15 @@ const VocabularyLearning = () => {
       let query = supabase
         .from('dictionary_entries')
         .select('*')
-        .eq('difficulty_level', selectedDifficulty)
+        .order('created_at', { ascending: false })
         .limit(20);
 
+      // Apply difficulty filter if not 'all'
+      if (selectedDifficulty !== 'all') {
+        query = query.eq('difficulty_level', selectedDifficulty);
+      }
+
+      // Apply category filter if not 'all'
       if (selectedCategory !== 'all') {
         query = query.eq('semantic_category', selectedCategory);
       }
@@ -60,6 +67,7 @@ const VocabularyLearning = () => {
       const { data, error } = await query;
 
       if (error) throw error;
+      console.log('Fetched vocabulary entries:', data?.length);
       setEntries(data || []);
     } catch (error) {
       console.error('Error fetching vocabulary:', error);

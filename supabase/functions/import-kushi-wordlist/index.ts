@@ -264,22 +264,7 @@ serve(async (req) => {
 
     console.log(`Parsed ${entries.length} entries from wordlist`);
 
-    // Create a system contribution for the import
-    const { data: contribution, error: contribError } = await supabaseClient
-      .from('contributions')
-      .insert({
-        goji_text: 'Kushi Dictionary Import',
-        english_translation: 'Academic wordlist from University of Naples',
-        type: 'word',
-        status: 'approved'
-      })
-      .select('id')
-      .single();
-
-    if (contribError) {
-      console.error('Error creating system contribution:', contribError);
-      throw new Error('Failed to create system contribution');
-    }
+    // Skip creating contribution for system import - insert entries directly
 
     // Batch insert entries
     const batchSize = 50;
@@ -302,7 +287,7 @@ serve(async (req) => {
         cultural_context: entry.cultural_context,
         literal_translation: entry.literal_translation,
         contributor_id: null, // System import
-        contribution_id: contribution.id, // Use the created contribution
+        contribution_id: null, // No contribution needed for system import
         usage_frequency: Math.floor(Math.random() * 10) + 1, // Random frequency for now
       }));
 
