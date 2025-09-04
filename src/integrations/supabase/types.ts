@@ -826,6 +826,7 @@ export type Database = {
           contribution_id: string
           contributor_id: string
           created_at: string
+          cross_references: string[] | null
           cultural_context: string | null
           difficulty_level: string | null
           embedding: string | null
@@ -835,8 +836,14 @@ export type Database = {
           hausa_translation: string | null
           id: string
           last_updated: string | null
+          linguistic_notes: string | null
+          literal_translation: string | null
+          part_of_speech: string | null
           pronunciation_guide: string | null
+          semantic_category: string | null
+          tone_marking: string | null
           usage_frequency: number | null
+          word_family: string[] | null
         }
         Insert: {
           approved_at?: string
@@ -844,6 +851,7 @@ export type Database = {
           contribution_id: string
           contributor_id: string
           created_at?: string
+          cross_references?: string[] | null
           cultural_context?: string | null
           difficulty_level?: string | null
           embedding?: string | null
@@ -853,8 +861,14 @@ export type Database = {
           hausa_translation?: string | null
           id?: string
           last_updated?: string | null
+          linguistic_notes?: string | null
+          literal_translation?: string | null
+          part_of_speech?: string | null
           pronunciation_guide?: string | null
+          semantic_category?: string | null
+          tone_marking?: string | null
           usage_frequency?: number | null
+          word_family?: string[] | null
         }
         Update: {
           approved_at?: string
@@ -862,6 +876,7 @@ export type Database = {
           contribution_id?: string
           contributor_id?: string
           created_at?: string
+          cross_references?: string[] | null
           cultural_context?: string | null
           difficulty_level?: string | null
           embedding?: string | null
@@ -871,8 +886,14 @@ export type Database = {
           hausa_translation?: string | null
           id?: string
           last_updated?: string | null
+          linguistic_notes?: string | null
+          literal_translation?: string | null
+          part_of_speech?: string | null
           pronunciation_guide?: string | null
+          semantic_category?: string | null
+          tone_marking?: string | null
           usage_frequency?: number | null
+          word_family?: string[] | null
         }
         Relationships: [
           {
@@ -1992,6 +2013,10 @@ export type Database = {
       check_duplicate_newsletter_subscription: {
         Args: { _email: string }
         Returns: boolean
+      }
+      clear_demo_entries: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       generate_embeddings_for_dictionary: {
         Args: Record<PropertyKey, never>

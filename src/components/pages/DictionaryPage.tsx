@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { BulkImportDialog } from "@/components/dictionary/BulkImportDialog";
+import { KushiImportButton } from "@/components/dictionary/KushiImportButton";
 
 interface DictionaryEntry {
   id: string;
@@ -17,6 +18,12 @@ interface DictionaryEntry {
   category_id: string;
   audio_data: string | null;
   example_sentence?: string;
+  part_of_speech?: string;
+  semantic_category?: string;
+  difficulty_level?: string;
+  pronunciation_guide?: string;
+  tone_marking?: string;
+  linguistic_notes?: string;
   goji_categories: {
     name: string;
     emoji: string;
@@ -57,7 +64,11 @@ const DictionaryPage = () => {
           cultural_context,
           pronunciation_guide,
           difficulty_level,
-          usage_frequency
+          usage_frequency,
+          part_of_speech,
+          semantic_category,
+          tone_marking,
+          linguistic_notes
         `)
         .order('usage_frequency', { ascending: false });
 
@@ -69,14 +80,18 @@ const DictionaryPage = () => {
         goji_text: entry.goji_word,
         english_translation: entry.english_translation,
         hausa_translation: entry.hausa_translation,
-        category_id: categorizeWord(entry.goji_word),
+        category_id: entry.semantic_category || categorizeWord(entry.goji_word),
         audio_data: null, // Audio will be generated/fetched separately
         example_sentence: entry.example_sentence,
         pronunciation_guide: entry.pronunciation_guide,
         difficulty_level: entry.difficulty_level,
+        part_of_speech: entry.part_of_speech,
+        semantic_category: entry.semantic_category,
+        tone_marking: entry.tone_marking,
+        linguistic_notes: entry.linguistic_notes,
         goji_categories: {
-          name: categorizeWord(entry.goji_word),
-          emoji: getCategoryEmoji(categorizeWord(entry.goji_word))
+          name: entry.semantic_category || categorizeWord(entry.goji_word),
+          emoji: getCategoryEmoji(entry.semantic_category || categorizeWord(entry.goji_word))
         }
       })) || [];
 
@@ -200,6 +215,7 @@ const DictionaryPage = () => {
             <p className="text-sm text-muted-foreground">Goji Dictionary & Grammar</p>
           </div>
           <div className="flex gap-2">
+            <KushiImportButton />
             <BulkImportDialog onImportComplete={fetchEntries} />
             <Button size="sm" className="flex items-center space-x-2">
               <Plus className="h-4 w-4" />
@@ -254,7 +270,14 @@ const DictionaryPage = () => {
                     <div className="space-y-3">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-goji-earth mb-1">{entry.goji_text}</h3>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-xl font-bold text-goji-earth">{entry.goji_text}</h3>
+                            {entry.part_of_speech && (
+                              <Badge variant="outline" className="text-xs border-goji-warm text-goji-warm">
+                                {entry.part_of_speech}
+                              </Badge>
+                            )}
+                          </div>
                           <div className="space-y-1">
                             {entry.english_translation && (
                               <p className="text-sm text-foreground">
@@ -266,9 +289,19 @@ const DictionaryPage = () => {
                                 <span className="font-medium text-goji-warm">Hausa:</span> {entry.hausa_translation}
                               </p>
                             )}
+                            {entry.pronunciation_guide && (
+                              <p className="text-xs text-muted-foreground">
+                                <span className="font-medium">Pronunciation:</span> {entry.pronunciation_guide}
+                              </p>
+                            )}
                             {entry.example_sentence && (
                               <p className="text-xs text-muted-foreground italic">
                                 Example: {entry.example_sentence}
+                              </p>
+                            )}
+                            {entry.linguistic_notes && (
+                              <p className="text-xs text-muted-foreground">
+                                <span className="font-medium">Notes:</span> {entry.linguistic_notes}
                               </p>
                             )}
                           </div>
@@ -285,11 +318,21 @@ const DictionaryPage = () => {
                       </div>
                       
                       <div className="flex items-center justify-between pt-2">
-                        <Badge variant="secondary" className="bg-goji-accent/20 text-goji-earth">
-                          {entry.goji_categories?.emoji} {entry.goji_categories?.name || 'general'}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="secondary" className="bg-goji-accent/20 text-goji-earth">
+                            {entry.goji_categories?.emoji} {entry.goji_categories?.name || 'general'}
+                          </Badge>
+                          {entry.difficulty_level && (
+                            <Badge variant={
+                              entry.difficulty_level === 'beginner' ? 'default' :
+                              entry.difficulty_level === 'intermediate' ? 'secondary' : 'destructive'
+                            } className="text-xs">
+                              {entry.difficulty_level}
+                            </Badge>
+                          )}
+                        </div>
                         <span className="text-xs text-muted-foreground">
-                          From 2006 Goji Document
+                          Academic Source
                         </span>
                       </div>
                     </div>
