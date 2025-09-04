@@ -75,7 +75,7 @@ const ChatPage = () => {
         .from("conversations")
         .select("id")
         .eq("title", "Goji Community Chat")
-        .eq("conversation_type", "public")
+        .eq("conversation_type", "general")
         .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
@@ -92,7 +92,7 @@ const ChatPage = () => {
             title: "Goji Community Chat",
             description: "Community chat for all Goji language learners and speakers",
             creator_id: user.id,
-            conversation_type: "public",
+            conversation_type: "general",
             difficulty_level: "beginner",
             is_active: true,
             message_count: 0,
