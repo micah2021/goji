@@ -46,6 +46,8 @@ const ConversationManager = ({ onSelectConversation, selectedConversationId }: C
   }, [user]);
 
   const fetchConversations = async () => {
+    console.log('Fetching conversations for user:', user?.id);
+    
     try {
       const { data, error } = await supabase
         .from("conversations")
@@ -66,43 +68,62 @@ const ConversationManager = ({ onSelectConversation, selectedConversationId }: C
         .order("updated_at", { ascending: false })
         .limit(20);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching conversations:', error);
+        throw error;
+      }
       
-      // Fetch creator profiles separately and anonymize for public conversations
-      const conversationsWithProfiles: Conversation[] = [];
+      console.log('Fetched conversations:', data?.length || 0);
       
-      for (const conv of data || []) {
+      // Optimize profile fetching by batching unique creator IDs
+      const uniqueCreatorIds = [...new Set(
+        (data || [])
+          .filter(conv => conv.creator_id === user?.id)
+          .map(conv => conv.creator_id)
+      )];
+      
+      // Batch fetch profiles for user's own conversations
+      const profilesMap = new Map();
+      if (uniqueCreatorIds.length > 0) {
+        const { data: profilesData } = await supabase
+          .from("profiles")
+          .select("user_id, username, full_name")
+          .in("user_id", uniqueCreatorIds);
+        
+        (profilesData || []).forEach(profile => {
+          profilesMap.set(profile.user_id, profile);
+        });
+      }
+      
+      // Build conversations with profiles
+      const conversationsWithProfiles: Conversation[] = (data || []).map(conv => {
         let profileData = { username: '', full_name: '' };
         
-        // Only fetch real profile data for conversations the user created
-        // For public conversations, show anonymous data to protect privacy
         if (conv.creator_id === user?.id) {
-          const { data: realProfileData } = await supabase
-            .from("profiles")
-            .select("username, full_name")
-            .eq("user_id", conv.creator_id)
-            .maybeSingle();
-          
-          profileData = realProfileData || { username: '', full_name: '' };
+          const profile = profilesMap.get(conv.creator_id);
+          profileData = profile ? {
+            username: profile.username || '',
+            full_name: profile.full_name || ''
+          } : { username: '', full_name: '' };
         } else if (conv.conversation_type === 'general' || conv.conversation_type === 'public') {
-          // Anonymize public conversations to protect user privacy
           profileData = { 
             username: 'Community Member', 
             full_name: 'Community Member' 
           };
         }
         
-        conversationsWithProfiles.push({
+        return {
           ...conv,
           profiles: profileData
-        });
-      }
+        };
+      });
       
       setConversations(conversationsWithProfiles);
     } catch (error) {
+      console.error('Failed to load conversations:', error);
       toast({
         title: "Error",
-        description: "Failed to load conversations",
+        description: "Failed to load conversations. Please try refreshing the page.",
         variant: "destructive"
       });
     }

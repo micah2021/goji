@@ -68,6 +68,8 @@ const ChatPage = () => {
   }, [selectedConversationId]);
 
   const fetchDefaultConversation = async () => {
+    console.log('Fetching default conversation for user:', user?.id);
+    
     try {
       // Get or create a default "General Chat" conversation
       let { data, error } = await supabase
@@ -77,9 +79,13 @@ const ChatPage = () => {
         .eq("conversation_type", "general")
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') throw error;
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching default conversation:', error);
+        throw error;
+      }
 
       if (!data && user) {
+        console.log('Creating default conversation');
         // Create default conversation
         const { data: newConv, error: createError } = await supabase
           .from("conversations")
@@ -87,22 +93,33 @@ const ChatPage = () => {
             title: "General Chat",
             description: "Main conversation for Goji language enthusiasts",
             creator_id: user.id,
-            conversation_type: "general"
+            conversation_type: "general",
+            difficulty_level: "beginner",
+            is_active: true,
+            message_count: 0,
+            participant_count: 1
           })
           .select()
           .single();
 
-        if (createError) throw createError;
+        if (createError) {
+          console.error('Error creating default conversation:', createError);
+          throw createError;
+        }
         data = newConv;
       }
 
       if (data) {
+        console.log('Setting default conversation:', data.id);
         setSelectedConversationId(data.id);
+      } else {
+        console.log('No conversation found or created');
       }
     } catch (error) {
+      console.error('Failed to load default conversation:', error);
       toast({
         title: "Error",
-        description: "Failed to load default conversation",
+        description: "Failed to load default conversation. Please try refreshing the page.",
         variant: "destructive"
       });
     }
@@ -111,6 +128,8 @@ const ChatPage = () => {
   const fetchMessages = async () => {
     if (!selectedConversationId) return;
 
+    console.log('Fetching messages for conversation:', selectedConversationId);
+    
     try {
       const { data, error } = await supabase
         .from("messages")
@@ -126,9 +145,15 @@ const ChatPage = () => {
         .order("created_at", { ascending: true })
         .limit(100);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching messages:', error);
+        throw error;
+      }
+      
+      console.log('Fetched messages:', data?.length || 0);
       setMessages(data || []);
     } catch (error) {
+      console.error('Failed to load messages:', error);
       toast({
         title: "Error",
         description: "Failed to load messages",
@@ -156,8 +181,10 @@ const ChatPage = () => {
   const subscribeToMessages = () => {
     if (!selectedConversationId) return;
 
+    console.log('Setting up message subscription for conversation:', selectedConversationId);
+
     const channel = supabase
-      .channel('schema-db-changes')
+      .channel(`messages-${selectedConversationId}`)
       .on(
         'postgres_changes',
         {
@@ -167,27 +194,52 @@ const ChatPage = () => {
           filter: `conversation_id=eq.${selectedConversationId}`
         },
         async (payload) => {
+          console.log('New message received:', payload);
           const newMessage = payload.new as Message;
           
-          // Fetch profile data for the new message
-          const { data: profileData } = await supabase
-            .from("profiles")
-            .select("username, full_name, role")
-            .eq("user_id", newMessage.user_id)
-            .maybeSingle();
+          // Avoid fetching profile if it's the current user
+          if (newMessage.user_id === user?.id) {
+            const messageWithProfile = {
+              ...newMessage,
+              profiles: {
+                username: user.user_metadata?.username || '',
+                full_name: user.user_metadata?.full_name || '',
+                role: user.user_metadata?.role || 'member'
+              }
+            };
+            setMessages(prev => [...prev, messageWithProfile]);
+            scrollToBottom();
+            return;
+          }
           
-          const messageWithProfile = {
-            ...newMessage,
-            profiles: profileData || { username: '', full_name: '', role: 'member' }
-          };
-          
-          setMessages(prev => [...prev, messageWithProfile]);
-          scrollToBottom();
+          // Fetch profile data for other users
+          try {
+            const { data: profileData, error } = await supabase
+              .from("profiles")
+              .select("username, full_name, role")
+              .eq("user_id", newMessage.user_id)
+              .maybeSingle();
+            
+            if (error) {
+              console.error('Error fetching profile:', error);
+            }
+            
+            const messageWithProfile = {
+              ...newMessage,
+              profiles: profileData || { username: '', full_name: '', role: 'member' }
+            };
+            
+            setMessages(prev => [...prev, messageWithProfile]);
+            scrollToBottom();
+          } catch (error) {
+            console.error('Failed to fetch message profile:', error);
+          }
         }
       )
       .subscribe();
 
     return () => {
+      console.log('Cleaning up message subscription');
       supabase.removeChannel(channel);
     };
   };
