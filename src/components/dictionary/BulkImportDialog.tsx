@@ -96,6 +96,26 @@ export const BulkImportDialog = ({ onImportComplete }: BulkImportDialogProps) =>
     return text.split('\n')
       .filter(line => line.trim())
       .map(line => {
+        // Handle format: word [tab] part_of_speech. english. hausa.
+        if (line.includes('\t')) {
+          const [goji_word, rest] = line.split('\t').map(p => p.trim());
+          if (rest) {
+            // Extract part of speech, english, and hausa from the rest
+            const match = rest.match(/^([nvadj]+\.)\s*(.+?)\.\s*(.+?)\.?$/);
+            if (match) {
+              return {
+                goji_word,
+                english_translation: match[2].trim(),
+                hausa_translation: match[3].trim(),
+                part_of_speech: match[1].replace('.', ''),
+                example_sentence: null,
+                cultural_context: null
+              };
+            }
+          }
+        }
+        
+        // Handle format: word = english = hausa
         const parts = line.split('=').map(p => p.trim());
         if (parts.length >= 2) {
           return {
