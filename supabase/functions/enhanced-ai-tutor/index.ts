@@ -43,29 +43,46 @@ async function performSemanticSearch(supabase: any, query: string, limit = 5) {
   try {
     const queryEmbedding = await generateEmbedding(query);
     
-    // Search dictionary entries
+    // Search dictionary entries with lower threshold
     const { data: dictionaryResults } = await supabase.rpc('match_dictionary_entries', {
       query_embedding: queryEmbedding,
-      match_threshold: 0.7,
+      match_threshold: 0.5,
       match_count: limit
     });
 
-    // Search cultural contexts
+    // Search cultural contexts with lower threshold
     const { data: culturalResults } = await supabase.rpc('match_cultural_contexts', {
       query_embedding: queryEmbedding,
-      match_threshold: 0.7,
+      match_threshold: 0.5,
       match_count: limit
     });
 
-    // Search AI learning data
+    // Search AI learning data with lower threshold
     const { data: learningResults } = await supabase.rpc('match_learning_data', {
       query_embedding: queryEmbedding,
-      match_threshold: 0.7,
+      match_threshold: 0.5,
       match_count: limit
     });
 
+    // Fallback: if no semantic matches, try fuzzy/substring matching for Goji words
+    let fallbackDictionary = [];
+    if (!dictionaryResults || dictionaryResults.length === 0) {
+      const { data: fuzzyResults } = await supabase
+        .from('dictionary_entries')
+        .select('*')
+        .or(`goji_word.ilike.%${query}%,english_translation.ilike.%${query}%`)
+        .limit(3);
+      
+      if (fuzzyResults) {
+        fallbackDictionary = fuzzyResults.map((item: any) => ({
+          ...item,
+          similarity: 0.6 // Assign moderate similarity for fallback matches
+        }));
+      }
+    }
+
     return {
-      dictionary: dictionaryResults || [],
+      dictionary: [...(dictionaryResults || []), ...fallbackDictionary],
       cultural: culturalResults || [],
       learning: learningResults || []
     };
