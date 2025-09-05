@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AILanguageTutor } from "@/components/ai/AILanguageTutor";
 import { AIContentGenerator } from "@/components/ai/AIContentGenerator";
 import { GenerateEmbeddingsButton } from "@/components/ai/GenerateEmbeddingsButton";
+import { EmbeddingTest } from "@/components/ai/EmbeddingTest";
 import { Brain, Sparkles } from "lucide-react";
 
 const TutorPage = () => {
@@ -17,7 +18,7 @@ const TutorPage = () => {
             Learn Goji with AI-powered tutoring and content generation
           </p>
           <div className="mt-4">
-            <GenerateEmbeddingsButton />
+            <EmbeddingTest />
           </div>
         </div>
 
