@@ -823,8 +823,8 @@ export type Database = {
         Row: {
           approved_at: string
           audio_quality_score: number | null
-          contribution_id: string
-          contributor_id: string
+          contribution_id: string | null
+          contributor_id: string | null
           created_at: string
           cross_references: string[] | null
           cultural_context: string | null
@@ -848,8 +848,8 @@ export type Database = {
         Insert: {
           approved_at?: string
           audio_quality_score?: number | null
-          contribution_id: string
-          contributor_id: string
+          contribution_id?: string | null
+          contributor_id?: string | null
           created_at?: string
           cross_references?: string[] | null
           cultural_context?: string | null
@@ -873,8 +873,8 @@ export type Database = {
         Update: {
           approved_at?: string
           audio_quality_score?: number | null
-          contribution_id?: string
-          contributor_id?: string
+          contribution_id?: string | null
+          contributor_id?: string | null
           created_at?: string
           cross_references?: string[] | null
           cultural_context?: string | null
