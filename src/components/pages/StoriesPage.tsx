@@ -280,7 +280,7 @@ const StoriesPage = () => {
                 <div className="space-y-2">
                   <div className="space-y-2">
                     {story.audio_url ? (
-                      <div>
+                      <div className="space-y-2">
                         <div className="text-xs text-muted-foreground mb-1">
                           Audio URL: {story.audio_url.split('/').pop()}
                         </div>
@@ -289,6 +289,18 @@ const StoriesPage = () => {
                           className="w-full"
                           showWaveform={false}
                         />
+                        {/* Native browser controls fallback for mobile */}
+                        <details className="text-xs">
+                          <summary className="cursor-pointer text-muted-foreground">Show native player</summary>
+                          <audio
+                            controls
+                            preload="metadata"
+                            className="w-full mt-2"
+                          >
+                            <source src={story.audio_url} type="audio/mpeg" />
+                            Your browser does not support audio.
+                          </audio>
+                        </details>
                       </div>
                     ) : (
                       <div className="text-center p-3 bg-muted/50 rounded-lg">

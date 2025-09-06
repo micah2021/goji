@@ -244,6 +244,33 @@ const AudioPlayer = ({ audioUrl, className, showWaveform = false }: AudioPlayerP
         </div>
       </div>
 
+      {/* Mobile Fallback Options */}
+      <div className="flex gap-1">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => window.open(audioUrl, '_blank')}
+          className="h-6 w-6 p-0"
+          title="Open audio in new tab"
+        >
+          📱
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            const a = document.createElement('a');
+            a.href = audioUrl;
+            a.download = 'audio.mp3';
+            a.click();
+          }}
+          className="h-6 w-6 p-0"
+          title="Download audio"
+        >
+          📥
+        </Button>
+      </div>
+
       <Volume2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
 
       <audio
