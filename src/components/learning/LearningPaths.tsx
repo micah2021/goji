@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle, Circle, Play, Lock, Users, Star, BookOpen } from "lucide-react";
+import { LessonModal } from "./LessonModal";
 
 interface Lesson {
   id: string;
@@ -34,6 +35,8 @@ export const LearningPaths = () => {
   const [paths, setPaths] = useState<LearningPath[]>([]);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [userLevel, setUserLevel] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner');
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -123,9 +126,15 @@ export const LearningPaths = () => {
   const startLesson = (lesson: Lesson) => {
     if (lesson.locked) return;
     
-    console.log('Starting lesson:', lesson.title);
-    // In a real app, navigate to lesson component or modal
-    alert(`Starting "${lesson.title}" - This would open the lesson interface!`);
+    setSelectedLesson(lesson);
+    setIsLessonModalOpen(true);
+  };
+
+  const closeLessonModal = () => {
+    setIsLessonModalOpen(false);
+    setSelectedLesson(null);
+    // Refresh lesson progress when modal closes
+    generateLearningPaths();
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -189,6 +198,13 @@ export const LearningPaths = () => {
           </Card>
         ))}
       </div>
+
+      {/* Lesson Modal */}
+      <LessonModal
+        isOpen={isLessonModalOpen}
+        onClose={closeLessonModal}
+        lesson={selectedLesson}
+      />
 
       {/* Selected Path Details */}
       {selectedPathData && (
