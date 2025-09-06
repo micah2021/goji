@@ -80,31 +80,45 @@ const AboutPage = () => {
           </div>
           <div className="grid grid-cols-1 gap-3">
             <div className="flex items-center space-x-3 p-3 bg-goji-accent/10 rounded-lg">
-              <div className="w-8 h-8 bg-goji-warm text-white rounded-full flex items-center justify-center text-sm">🎤</div>
+              <div className="w-8 h-8 bg-goji-warm text-white rounded-full flex items-center justify-center text-sm">💬</div>
               <div>
-                <p className="font-medium text-foreground">Audio Recording</p>
-                <p className="text-xs text-muted-foreground">Practice pronunciation and speech</p>
+                <p className="font-medium text-foreground">Community Chat</p>
+                <p className="text-xs text-muted-foreground">Practice with learners and native speakers worldwide</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3 p-3 bg-goji-accent/10 rounded-lg">
+              <div className="w-8 h-8 bg-goji-warm text-white rounded-full flex items-center justify-center text-sm">🤖</div>
+              <div>
+                <p className="font-medium text-foreground">AI Language Tutor</p>
+                <p className="text-xs text-muted-foreground">Personalized conversations with AI feedback</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 p-3 bg-goji-accent/10 rounded-lg">
               <div className="w-8 h-8 bg-goji-warm text-white rounded-full flex items-center justify-center text-sm">📚</div>
               <div>
                 <p className="font-medium text-foreground">Interactive Dictionary</p>
-                <p className="text-xs text-muted-foreground">30+ words with audio and examples</p>
+                <p className="text-xs text-muted-foreground">Searchable vocabulary with translations</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 p-3 bg-goji-accent/10 rounded-lg">
               <div className="w-8 h-8 bg-goji-warm text-white rounded-full flex items-center justify-center text-sm">🎓</div>
               <div>
-                <p className="font-medium text-foreground">Learning Lessons</p>
-                <p className="text-xs text-muted-foreground">Structured learning with progress tracking</p>
+                <p className="font-medium text-foreground">Cultural Lessons</p>
+                <p className="text-xs text-muted-foreground">Traditional stories in Goji language</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 p-3 bg-goji-accent/10 rounded-lg">
-              <div className="w-8 h-8 bg-goji-warm text-white rounded-full flex items-center justify-center text-sm">📖</div>
+              <div className="w-8 h-8 bg-goji-warm text-white rounded-full flex items-center justify-center text-sm">🔤</div>
               <div>
-                <p className="font-medium text-foreground">Cultural Stories</p>
-                <p className="text-xs text-muted-foreground">Traditional stories and wisdom</p>
+                <p className="font-medium text-foreground">Phonology Guide</p>
+                <p className="text-xs text-muted-foreground">Learn Goji sounds and pronunciation</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3 p-3 bg-goji-accent/10 rounded-lg">
+              <div className="w-8 h-8 bg-goji-warm text-white rounded-full flex items-center justify-center text-sm">🎤</div>
+              <div>
+                <p className="font-medium text-foreground">Audio Recordings</p>
+                <p className="text-xs text-muted-foreground">Record and share cultural stories</p>
               </div>
             </div>
           </div>
@@ -118,23 +132,23 @@ const AboutPage = () => {
           <div className="space-y-2 text-sm">
             <p className="flex items-center space-x-2">
               <span className="text-goji-warm">🌱</span>
-              <span>Add more lessons covering family, food, and culture</span>
+              <span>Add vocabulary learning with spaced repetition</span>
+            </p>
+            <p className="flex items-center space-x-2">
+              <span className="text-goji-warm">📈</span>
+              <span>Progress tracking for learning achievements</span>
             </p>
             <p className="flex items-center space-x-2">
               <span className="text-goji-warm">📜</span>
-              <span>Include proverbs and stories from the 2006 document</span>
+              <span>More traditional stories and proverbs</span>
             </p>
             <p className="flex items-center space-x-2">
               <span className="text-goji-warm">🏫</span>
-              <span>Create a Teacher's Guide for schools</span>
-            </p>
-            <p className="flex items-center space-x-2">
-              <span className="text-goji-warm">📱</span>
-              <span>Enable offline audio downloads</span>
+              <span>Educational resources for schools</span>
             </p>
             <p className="flex items-center space-x-2">
               <span className="text-goji-warm">🤝</span>
-              <span>Partner with schools for weekly usage</span>
+              <span>Community features for language exchange</span>
             </p>
           </div>
         </div>
@@ -143,10 +157,11 @@ const AboutPage = () => {
       {/* Acknowledgment */}
       <Card className="p-6 bg-gradient-to-br from-yellow-50 to-orange-50 border-orange-200">
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-goji-earth">Important Note</h2>
+          <h2 className="text-lg font-semibold text-goji-earth">Acknowledgment</h2>
           <p className="text-sm text-foreground leading-relaxed">
-            I apologize to test run the app using their reading and writing in Goji materials, 
-            however I acknowledge the fact that this is only paper I find online. Thank you.
+            This app is built using the 2006 Goji writing system documentation as a reference. 
+            We acknowledge and respect the original work of the Goji Group and aim to honor 
+            their efforts in preserving the language through modern technology.
           </p>
         </div>
       </Card>
