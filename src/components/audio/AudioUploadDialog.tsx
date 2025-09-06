@@ -84,7 +84,8 @@ const AudioUploadDialog = ({ onUploadComplete }: AudioUploadDialogProps) => {
           context_type: formData.contextType,
           cultural_significance: formData.culturalSignificance,
           geographical_region: formData.geographicalRegion,
-          difficulty_level: 'intermediate'
+          difficulty_level: 'intermediate',
+          user_id: user.id
         })
         .select()
         .single();

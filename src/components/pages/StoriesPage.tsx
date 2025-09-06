@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { BookOpen, Play, Pause, Search, Filter, Upload } from "lucide-react";
+import { BookOpen, Play, Pause, Search, Filter, Upload, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 import AudioUploadDialog from "../audio/AudioUploadDialog";
@@ -17,8 +17,10 @@ interface CulturalStory {
   geographical_region: string;
   difficulty_level: string;
   created_at: string;
+  user_id?: string;
   audio_url?: string;
   duration?: string;
+  audio_recording_id?: string;
 }
 
 const StoriesPage = () => {
@@ -55,7 +57,8 @@ const StoriesPage = () => {
           cultural_significance,
           geographical_region,
           difficulty_level,
-          created_at
+          created_at,
+          user_id
         `)
         .order('created_at', { ascending: false });
 
@@ -76,7 +79,7 @@ const StoriesPage = () => {
         (data || []).map(async (story) => {
           const { data: audioData } = await supabase
             .from('audio_recordings')
-            .select('file_url, duration_seconds')
+            .select('id, file_url, duration_seconds')
             .ilike('transcription', `%${story.title}%`)
             .limit(1)
             .single();
@@ -84,6 +87,7 @@ const StoriesPage = () => {
           return {
             ...story,
             audio_url: audioData?.file_url,
+            audio_recording_id: audioData?.id,
             duration: audioData?.duration_seconds 
               ? `${Math.floor(audioData.duration_seconds / 60)}:${String(Math.floor(audioData.duration_seconds % 60)).padStart(2, '0')}`
               : undefined
@@ -142,6 +146,48 @@ const StoriesPage = () => {
       audioElements[storyId].currentTime = 0;
     }
     setPlayingAudio(null);
+  };
+
+  const handleDeleteRecording = async (story: CulturalStory) => {
+    if (!user || story.user_id !== user.id) return;
+    
+    if (!confirm(`Are you sure you want to delete "${story.title}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      // Delete the audio file from storage if it exists
+      if (story.audio_url) {
+        const fileName = story.audio_url.split('/').pop();
+        if (fileName) {
+          await supabase.storage
+            .from('chat-audio')
+            .remove([`elder-recordings/${fileName}`]);
+        }
+      }
+
+      // Delete the audio recording entry if it exists
+      if (story.audio_recording_id) {
+        await supabase
+          .from('audio_recordings')
+          .delete()
+          .eq('id', story.audio_recording_id);
+      }
+
+      // Delete the cultural context entry
+      const { error } = await supabase
+        .from('cultural_contexts')
+        .delete()
+        .eq('id', story.id);
+
+      if (error) throw error;
+
+      toast.success("Recording deleted successfully");
+      fetchStories(); // Refresh the list
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error("Failed to delete recording");
+    }
   };
 
   const formatContextType = (type: string) => {
@@ -272,30 +318,45 @@ const StoriesPage = () => {
                   </div>
                 </div>
                 
-                {story.audio_url ? (
-                  <Button 
-                    className="w-full flex items-center justify-center space-x-2"
-                    onClick={() => playingAudio === story.id 
-                      ? handleStopAudio(story.id)
-                      : handlePlayAudio(story.id, story.audio_url!)
-                    }
-                  >
-                    {playingAudio === story.id ? (
-                      <Pause className="h-4 w-4" />
-                    ) : (
-                      <Play className="h-4 w-4" />
-                    )}
-                    <span>
-                      {playingAudio === story.id ? "Stop • Tsayar" : "Listen • Saurara"}
-                    </span>
-                  </Button>
-                ) : (
-                  <div className="text-center p-4 bg-muted/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground">
-                      Audio recording not yet available for this story
-                    </p>
-                  </div>
-                )}
+                <div className="space-y-2">
+                  {story.audio_url ? (
+                    <Button 
+                      className="w-full flex items-center justify-center space-x-2"
+                      onClick={() => playingAudio === story.id 
+                        ? handleStopAudio(story.id)
+                        : handlePlayAudio(story.id, story.audio_url!)
+                      }
+                    >
+                      {playingAudio === story.id ? (
+                        <Pause className="h-4 w-4" />
+                      ) : (
+                        <Play className="h-4 w-4" />
+                      )}
+                      <span>
+                        {playingAudio === story.id ? "Stop • Tsayar" : "Listen • Saurara"}
+                      </span>
+                    </Button>
+                  ) : (
+                    <div className="text-center p-4 bg-muted/50 rounded-lg">
+                      <p className="text-sm text-muted-foreground">
+                        Audio recording not yet available for this story
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Delete button for owner */}
+                  {user && story.user_id === user.id && (
+                    <Button 
+                      variant="destructive"
+                      size="sm"
+                      className="w-full flex items-center justify-center space-x-2"
+                      onClick={() => handleDeleteRecording(story)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span>Delete Recording</span>
+                    </Button>
+                  )}
+                </div>
               </div>
             </Card>
           ))

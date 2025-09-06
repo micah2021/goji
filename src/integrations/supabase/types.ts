@@ -778,6 +778,7 @@ export type Database = {
           title: string
           updated_at: string | null
           usage_count: number | null
+          user_id: string | null
         }
         Insert: {
           clan_associations?: string[] | null
@@ -797,6 +798,7 @@ export type Database = {
           title: string
           updated_at?: string | null
           usage_count?: number | null
+          user_id?: string | null
         }
         Update: {
           clan_associations?: string[] | null
@@ -816,6 +818,7 @@ export type Database = {
           title?: string
           updated_at?: string | null
           usage_count?: number | null
+          user_id?: string | null
         }
         Relationships: []
       }
