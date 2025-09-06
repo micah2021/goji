@@ -46,7 +46,7 @@ export const AchievementSystem = () => {
         .from('user_achievements')
         .select(`
           *,
-          profiles!user_achievements_user_id_fkey(username, display_name)
+          profiles:user_id (username, display_name)
         `)
         .order('unlocked_at', { ascending: false })
         .limit(20);
@@ -55,7 +55,11 @@ export const AchievementSystem = () => {
       
       const achievementsWithUserFlag = (data || []).map(achievement => ({
         ...achievement,
-        is_current_user: user ? achievement.user_id === user.id : false
+        is_current_user: user ? achievement.user_id === user.id : false,
+        profiles: Array.isArray(achievement.profiles) && achievement.profiles.length > 0 ? {
+          username: achievement.profiles[0].username,
+          display_name: achievement.profiles[0].display_name
+        } : null
       }));
       
       setAchievements(achievementsWithUserFlag);

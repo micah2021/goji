@@ -121,7 +121,7 @@ export const CommunityFeed = () => {
         .from('community_posts')
         .select(`
           *,
-          profiles!community_posts_user_id_fkey(username, display_name)
+          profiles:user_id (username, display_name)
         `)
         .order('created_at', { ascending: false })
         .limit(20);
@@ -142,9 +142,9 @@ export const CommunityFeed = () => {
         const postsWithLikes = data.map(post => ({
           ...post,
           user_liked: likedPostIds.has(post.id),
-          profiles: post.profiles ? {
-            username: post.profiles.username,
-            display_name: post.profiles.display_name
+          profiles: Array.isArray(post.profiles) && post.profiles.length > 0 ? {
+            username: post.profiles[0].username,
+            display_name: post.profiles[0].display_name
           } : null
         }));
         
@@ -197,13 +197,22 @@ export const CommunityFeed = () => {
         .from('user_achievements')
         .select(`
           *,
-          profiles!user_achievements_user_id_fkey(username, display_name)
+          profiles:user_id (username, display_name)
         `)
         .order('unlocked_at', { ascending: false })
         .limit(10);
       
       if (error) throw error;
-      setAchievements(data || []);
+      
+      const processedAchievements = (data || []).map(achievement => ({
+        ...achievement,
+        profiles: Array.isArray(achievement.profiles) && achievement.profiles.length > 0 ? {
+          username: achievement.profiles[0].username,
+          display_name: achievement.profiles[0].display_name
+        } : null
+      }));
+      
+      setAchievements(processedAchievements);
     } catch (error) {
       console.error('Error fetching achievements:', error);
     }

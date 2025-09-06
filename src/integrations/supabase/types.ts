@@ -415,7 +415,22 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       competition_submissions: {
         Row: {
@@ -1739,6 +1754,20 @@ export type Database = {
             referencedRelation: "community_posts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "post_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "post_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_leaderboard"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       post_replies: {
@@ -1786,6 +1815,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "community_posts"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_replies_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "post_replies_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_leaderboard"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1933,6 +1976,20 @@ export type Database = {
             referencedRelation: "post_replies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "reply_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "reply_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_leaderboard"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       shared_experiments: {
@@ -2010,7 +2067,22 @@ export type Database = {
           unlocked_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       user_presence: {
         Row: {
