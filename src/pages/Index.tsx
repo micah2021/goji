@@ -30,7 +30,7 @@ const Index = () => {
 
   const renderPage = () => {
     switch (activeTab) {
-      case "chat":
+      case "community":
         return <ChatPage />;
       case "learn":
         return <LearnPage />;
@@ -38,7 +38,7 @@ const Index = () => {
         return <TutorPage />;
       case "about":
         return <AboutPage />;
-      case "profile":
+      case "analytics":
         return <ProfilePage />;
       default:
         return <ChatPage />;

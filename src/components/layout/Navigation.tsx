@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mic, Book, FileMusic, MessageCircle, User, GraduationCap, Hash, Info, Brain, LogOut } from "lucide-react";
+import { Mic, Book, FileMusic, MessageCircle, User, GraduationCap, Hash, Info, Brain, LogOut, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
@@ -14,10 +14,10 @@ const Navigation = ({ activeTab, onTabChange }: NavigationProps) => {
   const { toast } = useToast();
 
   const tabs = [
-    { id: "chat", icon: MessageCircle, label: "Community", labelHa: "Al'umma" },
+    { id: "community", icon: MessageCircle, label: "Community", labelHa: "Al'umma" },
     { id: "learn", icon: Book, label: "Learn", labelHa: "Koyo" },
     { id: "tutor", icon: Brain, label: "AI Tutor", labelHa: "Malamin AI" },
-    { id: "profile", icon: User, label: "Profile", labelHa: "Bayani" },
+    { id: "analytics", icon: BarChart3, label: "Dashboard", labelHa: "Kula" },
     { id: "about", icon: Info, label: "About", labelHa: "Game da" },
   ];
 
