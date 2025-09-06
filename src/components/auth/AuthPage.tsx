@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Smartphone } from "lucide-react";
+import { Eye, EyeOff, Smartphone, Mail } from "lucide-react";
 
 const AuthPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +17,8 @@ const AuthPage = () => {
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
+    email: "",
+    password: "",
     phone: "",
     otp: "",
     fullName: "",
@@ -27,7 +29,53 @@ const AuthPage = () => {
 
   const [otpSent, setOtpSent] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
 
+  const handleEmailSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: formData.fullName,
+            username: formData.username,
+            location: formData.location,
+            role: formData.role
+          }
+        }
+      });
+
+      if (signUpError) {
+        toast({
+          title: "Error",
+          description: signUpError.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Success!",
+        description: "Please check your email to confirm your account"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const sendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -106,7 +154,38 @@ const AuthPage = () => {
     }
   };
 
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password
+      });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      navigate("/");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePhoneSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -183,10 +262,9 @@ const AuthPage = () => {
         <CardHeader className="text-center">
           <img src="/goji-logo.png" alt="Goji" className="h-16 w-16 mx-auto mb-4" />
           <CardTitle className="flex items-center justify-center gap-2">
-            <Smartphone className="h-5 w-5" />
             Welcome to Goji Community
           </CardTitle>
-          <CardDescription>Sign in or create account using your phone number</CardDescription>
+          <CardDescription>Join the language preservation community with email or phone</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
@@ -196,166 +274,327 @@ const AuthPage = () => {
             </TabsList>
             
             <TabsContent value="signin">
-              {!otpSent ? (
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-phone">Phone Number</Label>
-                    <Input
-                      id="signin-phone"
-                      type="tel"
-                      placeholder="+1234567890"
-                      value={formData.phone}
-                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                      required
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Enter your phone number with country code (e.g., +1234567890)
-                    </p>
-                  </div>
-                  
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Sending OTP..." : "Send Verification Code"}
+              <div className="space-y-4">
+                {/* Auth Method Selection */}
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={authMethod === 'email' ? 'default' : 'outline'}
+                    className="flex-1"
+                    onClick={() => {
+                      setAuthMethod('email');
+                      setOtpSent(false);
+                      setFormData(prev => ({ ...prev, otp: "" }));
+                    }}
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    Email
                   </Button>
-                </form>
-              ) : (
-                <form onSubmit={verifyOTP} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-otp">Verification Code</Label>
-                    <Input
-                      id="signin-otp"
-                      type="text"
-                      placeholder="123456"
-                      value={formData.otp}
-                      onChange={(e) => setFormData(prev => ({ ...prev, otp: e.target.value }))}
-                      maxLength={6}
-                      required
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Enter the 6-digit code sent to {formData.phone}
-                    </p>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => {
-                        setOtpSent(false);
-                        setFormData(prev => ({ ...prev, otp: "" }));
-                      }}
-                      className="flex-1"
-                    >
-                      Change Number
+                  <Button
+                    type="button"
+                    variant={authMethod === 'phone' ? 'default' : 'outline'}
+                    className="flex-1"
+                    onClick={() => {
+                      setAuthMethod('phone');
+                      setOtpSent(false);
+                      setFormData(prev => ({ ...prev, otp: "" }));
+                    }}
+                  >
+                    <Smartphone className="h-4 w-4 mr-2" />
+                    Phone
+                  </Button>
+                </div>
+
+                {/* Email Sign In */}
+                {authMethod === 'email' && (
+                  <form onSubmit={handleEmailSignIn} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signin-email">Email</Label>
+                      <Input
+                        id="signin-email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="signin-password">Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="signin-password"
+                          type={showPassword ? "text" : "password"}
+                          value={formData.password}
+                          onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                          required
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? "Signing in..." : "Sign In"}
                     </Button>
-                    <Button type="submit" className="flex-1" disabled={isVerifying}>
-                      {isVerifying ? "Verifying..." : "Verify & Sign In"}
+                  </form>
+                )}
+
+                {/* Phone Sign In */}
+                {authMethod === 'phone' && !otpSent && (
+                  <form onSubmit={handlePhoneSignIn} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signin-phone">Phone Number</Label>
+                      <Input
+                        id="signin-phone"
+                        type="tel"
+                        placeholder="+1234567890"
+                        value={formData.phone}
+                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Enter your phone number with country code (e.g., +1234567890)
+                      </p>
+                    </div>
+                    
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? "Sending OTP..." : "Send Verification Code"}
                     </Button>
-                  </div>
-                </form>
-              )}
+                  </form>
+                )}
+
+                {/* OTP Verification */}
+                {authMethod === 'phone' && otpSent && (
+                  <form onSubmit={verifyOTP} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signin-otp">Verification Code</Label>
+                      <Input
+                        id="signin-otp"
+                        type="text"
+                        placeholder="123456"
+                        value={formData.otp}
+                        onChange={(e) => setFormData(prev => ({ ...prev, otp: e.target.value }))}
+                        maxLength={6}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Enter the 6-digit code sent to {formData.phone}
+                      </p>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => {
+                          setOtpSent(false);
+                          setFormData(prev => ({ ...prev, otp: "" }));
+                        }}
+                        className="flex-1"
+                      >
+                        Change Number
+                      </Button>
+                      <Button type="submit" className="flex-1" disabled={isVerifying}>
+                        {isVerifying ? "Verifying..." : "Verify & Sign In"}
+                      </Button>
+                    </div>
+                  </form>
+                )}
+              </div>
             </TabsContent>
             
             <TabsContent value="signup">
-              {!otpSent ? (
-                <form onSubmit={sendOTP} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name</Label>
-                    <Input
-                      id="fullName"
-                      value={formData.fullName}
-                      onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
-                      value={formData.username}
-                      onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Location</Label>
-                    <Input
-                      id="location"
-                      value={formData.location}
-                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                      placeholder="Optional"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="role">Role</Label>
-                    <Select value={formData.role} onValueChange={(value: "member" | "admin") => setFormData(prev => ({ ...prev, role: value }))}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="member">Member</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-phone">Phone Number</Label>
-                    <Input
-                      id="signup-phone"
-                      type="tel"
-                      placeholder="+1234567890"
-                      value={formData.phone}
-                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                      required
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Enter your phone number with country code (e.g., +1234567890)
-                    </p>
-                  </div>
-                  
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Sending OTP..." : "Send Verification Code"}
+              <div className="space-y-4">
+                {/* Auth Method Selection */}
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={authMethod === 'email' ? 'default' : 'outline'}
+                    className="flex-1"
+                    onClick={() => {
+                      setAuthMethod('email');
+                      setOtpSent(false);
+                      setFormData(prev => ({ ...prev, otp: "" }));
+                    }}
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    Email
                   </Button>
-                </form>
-              ) : (
-                <form onSubmit={verifyOTP} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-otp">Verification Code</Label>
-                    <Input
-                      id="signup-otp"
-                      type="text"
-                      placeholder="123456"
-                      value={formData.otp}
-                      onChange={(e) => setFormData(prev => ({ ...prev, otp: e.target.value }))}
-                      maxLength={6}
-                      required
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Enter the 6-digit code sent to {formData.phone}
-                    </p>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => {
-                        setOtpSent(false);
-                        setFormData(prev => ({ ...prev, otp: "" }));
-                      }}
-                      className="flex-1"
-                    >
-                      Change Number
+                  <Button
+                    type="button"
+                    variant={authMethod === 'phone' ? 'default' : 'outline'}
+                    className="flex-1"
+                    onClick={() => {
+                      setAuthMethod('phone');
+                      setOtpSent(false);
+                      setFormData(prev => ({ ...prev, otp: "" }));
+                    }}
+                  >
+                    <Smartphone className="h-4 w-4 mr-2" />
+                    Phone
+                  </Button>
+                </div>
+
+                {/* Common Profile Fields */}
+                {!otpSent && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="fullName">Full Name</Label>
+                      <Input
+                        id="fullName"
+                        value={formData.fullName}
+                        onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="username">Username</Label>
+                      <Input
+                        id="username"
+                        value={formData.username}
+                        onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="location">Location</Label>
+                      <Input
+                        id="location"
+                        value={formData.location}
+                        onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                        placeholder="Optional"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="role">Role</Label>
+                      <Select value={formData.role} onValueChange={(value: "member" | "admin") => setFormData(prev => ({ ...prev, role: value }))}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="member">Member</SelectItem>
+                          <SelectItem value="admin">Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </>
+                )}
+
+                {/* Email Sign Up */}
+                {authMethod === 'email' && (
+                  <form onSubmit={handleEmailSignUp} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email">Email</Label>
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password">Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="signup-password"
+                          type={showPassword ? "text" : "password"}
+                          value={formData.password}
+                          onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                          required
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? "Creating account..." : "Sign Up"}
                     </Button>
-                    <Button type="submit" className="flex-1" disabled={isVerifying}>
-                      {isVerifying ? "Verifying..." : "Verify & Create Account"}
+                  </form>
+                )}
+
+                {/* Phone Sign Up */}
+                {authMethod === 'phone' && !otpSent && (
+                  <form onSubmit={sendOTP} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-phone">Phone Number</Label>
+                      <Input
+                        id="signup-phone"
+                        type="tel"
+                        placeholder="+1234567890"
+                        value={formData.phone}
+                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Enter your phone number with country code (e.g., +1234567890)
+                      </p>
+                    </div>
+                    
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? "Sending OTP..." : "Send Verification Code"}
                     </Button>
-                  </div>
-                </form>
-              )}
+                  </form>
+                )}
+
+                {/* OTP Verification for Signup */}
+                {authMethod === 'phone' && otpSent && (
+                  <form onSubmit={verifyOTP} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-otp">Verification Code</Label>
+                      <Input
+                        id="signup-otp"
+                        type="text"
+                        placeholder="123456"
+                        value={formData.otp}
+                        onChange={(e) => setFormData(prev => ({ ...prev, otp: e.target.value }))}
+                        maxLength={6}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Enter the 6-digit code sent to {formData.phone}
+                      </p>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => {
+                          setOtpSent(false);
+                          setFormData(prev => ({ ...prev, otp: "" }));
+                        }}
+                        className="flex-1"
+                      >
+                        Change Number
+                      </Button>
+                      <Button type="submit" className="flex-1" disabled={isVerifying}>
+                        {isVerifying ? "Verifying..." : "Verify & Create Account"}
+                      </Button>
+                    </div>
+                  </form>
+                )}
+              </div>
             </TabsContent>
           </Tabs>
           
