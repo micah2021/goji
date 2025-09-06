@@ -319,43 +319,46 @@ const StoriesPage = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  {story.audio_url ? (
-                    <Button 
-                      className="w-full flex items-center justify-center space-x-2"
-                      onClick={() => playingAudio === story.id 
-                        ? handleStopAudio(story.id)
-                        : handlePlayAudio(story.id, story.audio_url!)
-                      }
-                    >
-                      {playingAudio === story.id ? (
-                        <Pause className="h-4 w-4" />
-                      ) : (
-                        <Play className="h-4 w-4" />
-                      )}
-                      <span>
-                        {playingAudio === story.id ? "Stop • Tsayar" : "Listen • Saurara"}
-                      </span>
-                    </Button>
-                  ) : (
-                    <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <p className="text-sm text-muted-foreground">
-                        Audio recording not yet available for this story
-                      </p>
-                    </div>
-                  )}
-                  
-                  {/* Delete button for owner or orphaned records */}
-                  {user && (story.user_id === user.id || !story.user_id) && (
-                    <Button 
-                      variant="destructive"
-                      size="sm"
-                      className="w-full flex items-center justify-center space-x-2"
-                      onClick={() => handleDeleteRecording(story)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <span>Delete Recording</span>
-                    </Button>
-                  )}
+                  <div className="space-y-2">
+                    {story.audio_url ? (
+                      <Button 
+                        size="sm"
+                        className="w-full flex items-center justify-center space-x-2"
+                        onClick={() => playingAudio === story.id 
+                          ? handleStopAudio(story.id)
+                          : handlePlayAudio(story.id, story.audio_url!)
+                        }
+                      >
+                        {playingAudio === story.id ? (
+                          <Pause className="h-3 w-3" />
+                        ) : (
+                          <Play className="h-3 w-3" />
+                        )}
+                        <span>
+                          {playingAudio === story.id ? "Stop • Tsayar" : "Listen • Saurara"}
+                        </span>
+                      </Button>
+                    ) : (
+                      <div className="text-center p-3 bg-muted/50 rounded-lg">
+                        <p className="text-xs text-muted-foreground">
+                          Audio recording not yet available for this story
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Delete button for owner or orphaned records */}
+                    {user && (story.user_id === user.id || !story.user_id) && (
+                      <Button 
+                        variant="destructive"
+                        size="sm"
+                        className="w-full flex items-center justify-center space-x-2 text-xs"
+                        onClick={() => handleDeleteRecording(story)}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        <span>Delete Recording</span>
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             </Card>
