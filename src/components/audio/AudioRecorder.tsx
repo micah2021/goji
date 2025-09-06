@@ -96,8 +96,39 @@ const AudioRecorder = () => {
 
   const playAudio = () => {
     if (audioRef.current && audioUrl) {
-      audioRef.current.play();
-      setIsPlaying(true);
+      // Mobile-specific audio handling
+      const audio = audioRef.current;
+      
+      // Reset audio to beginning
+      audio.currentTime = 0;
+      
+      // Create a promise-based play with mobile fallbacks
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch((error) => {
+            console.error('Audio play failed:', error);
+            // Fallback for mobile - try loading first
+            audio.load();
+            setTimeout(() => {
+              audio.play()
+                .then(() => setIsPlaying(true))
+                .catch(() => {
+                  toast({ 
+                    title: "Audio Error", 
+                    description: "Tap the audio element to play on mobile", 
+                    variant: "destructive" 
+                  });
+                });
+            }, 100);
+          });
+      } else {
+        setIsPlaying(true);
+      }
     }
   };
 
@@ -252,6 +283,18 @@ const AudioRecorder = () => {
           ref={audioRef}
           src={audioUrl}
           onEnded={() => setIsPlaying(false)}
+          onCanPlayThrough={() => console.log('Audio ready to play')}
+          onError={(e) => {
+            console.error('Audio error:', e);
+            toast({ 
+              title: "Audio Error", 
+              description: "Could not load audio file", 
+              variant: "destructive" 
+            });
+          }}
+          preload="metadata"
+          playsInline
+          controls={false}
           className="hidden"
         />
       )}

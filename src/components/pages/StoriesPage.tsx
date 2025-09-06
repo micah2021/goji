@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { BookOpen, Play, Pause, Search, Filter, Upload, Trash2 } from "lucide-react";
+import { BookOpen, Search, Upload, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 import AudioUploadDialog from "../audio/AudioUploadDialog";
+import AudioPlayer from "../audio/AudioPlayer";
 import { toast } from "sonner";
 
 interface CulturalStory {
@@ -28,8 +29,6 @@ const StoriesPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
-  const [playingAudio, setPlayingAudio] = useState<string | null>(null);
-  const [audioElements, setAudioElements] = useState<{ [key: string]: HTMLAudioElement }>({});
   const { user } = useAuth();
 
   const categories = [
@@ -107,46 +106,6 @@ const StoriesPage = () => {
   useEffect(() => {
     fetchStories();
   }, [activeCategory, searchTerm]);
-
-  const handlePlayAudio = (storyId: string, audioUrl: string) => {
-    // Stop any currently playing audio
-    if (playingAudio && audioElements[playingAudio]) {
-      audioElements[playingAudio].pause();
-      audioElements[playingAudio].currentTime = 0;
-    }
-
-    if (playingAudio === storyId) {
-      setPlayingAudio(null);
-      return;
-    }
-
-    // Create or get audio element
-    let audio = audioElements[storyId];
-    if (!audio) {
-      audio = new Audio(audioUrl);
-      audio.onended = () => setPlayingAudio(null);
-      audio.onerror = () => {
-        toast.error("Failed to load audio");
-        setPlayingAudio(null);
-      };
-      setAudioElements(prev => ({ ...prev, [storyId]: audio }));
-    }
-
-    audio.play()
-      .then(() => setPlayingAudio(storyId))
-      .catch(() => {
-        toast.error("Failed to play audio");
-        setPlayingAudio(null);
-      });
-  };
-
-  const handleStopAudio = (storyId: string) => {
-    if (audioElements[storyId]) {
-      audioElements[storyId].pause();
-      audioElements[storyId].currentTime = 0;
-    }
-    setPlayingAudio(null);
-  };
 
   const handleDeleteRecording = async (story: CulturalStory) => {
     if (!user || story.user_id !== user.id) return;
@@ -321,23 +280,11 @@ const StoriesPage = () => {
                 <div className="space-y-2">
                   <div className="space-y-2">
                     {story.audio_url ? (
-                      <Button 
-                        size="sm"
-                        className="w-full flex items-center justify-center space-x-2"
-                        onClick={() => playingAudio === story.id 
-                          ? handleStopAudio(story.id)
-                          : handlePlayAudio(story.id, story.audio_url!)
-                        }
-                      >
-                        {playingAudio === story.id ? (
-                          <Pause className="h-3 w-3" />
-                        ) : (
-                          <Play className="h-3 w-3" />
-                        )}
-                        <span>
-                          {playingAudio === story.id ? "Stop • Tsayar" : "Listen • Saurara"}
-                        </span>
-                      </Button>
+                      <AudioPlayer 
+                        audioUrl={story.audio_url}
+                        className="w-full"
+                        showWaveform={false}
+                      />
                     ) : (
                       <div className="text-center p-3 bg-muted/50 rounded-lg">
                         <p className="text-xs text-muted-foreground">
