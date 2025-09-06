@@ -84,18 +84,6 @@ But the young person asked many questions: "How do you know these things? What m
               </div>
             </div>
 
-            {lesson.translation && (
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-3">
-                  English Translation • Fassarar Turanci
-                </h3>
-                <div className="bg-primary/10 rounded-lg p-4">
-                  <p className="text-foreground leading-relaxed whitespace-pre-line">
-                    {lesson.translation}
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         </Card>
       </div>
