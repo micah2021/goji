@@ -344,8 +344,8 @@ const StoriesPage = () => {
                     </div>
                   )}
                   
-                  {/* Delete button for owner */}
-                  {user && story.user_id === user.id && (
+                  {/* Delete button for owner or orphaned records */}
+                  {user && (story.user_id === user.id || !story.user_id) && (
                     <Button 
                       variant="destructive"
                       size="sm"
