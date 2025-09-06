@@ -129,8 +129,8 @@ serve(async (req) => {
       profile = newProfile;
     }
 
-    // Perform semantic search for relevant context
-    const searchResults = await performSemanticSearch(supabase, userInput);
+// Perform semantic search for relevant context with higher limits
+  const searchResults = await performSemanticSearch(supabase, userInput, 20);
 
     // Build enhanced context from search results
     let enhancedContext = '';
@@ -166,26 +166,14 @@ LEARNER PROFILE:
 - Native Language: ${profile?.native_language || 'english'}
 - Vocabulary Mastered: ${profile?.vocabulary_mastery_count || 0} words
 
-GOJI LANGUAGE COMPREHENSIVE KNOWLEDGE:
-Phonology: 6 vowels (a, e, i, o, u, o̱), long vowels (aa, ee, oo, uu), diphthongs (ai, au, ei, oi)
-24 consonants including: ɓ, ɗ, ƙ, gb, kp with three tone levels
+GOJI LANGUAGE ACCESS:
+You have access to a comprehensive dictionary of over 1100 Goji words through semantic search.
+When users ask about specific words, always search the database for accurate information.
 
-Core Vocabulary & Grammar:
-- Numbers: ɗo̱ƙ (one), palou (two), taru (three), naai (four), fuwat (five)
-- Family: shuji (father), poomun (wife), memme (people), lano (child)
-- Animals: wi (goat), fe (hen), ɓai (dog), jango̱ni (cat)
-- Nature: biro (tree), ɗo (water), shela (stone), daran (sun), tere (moon)
-- Home: mina (house), pomina (room), telan (pot), gburam (chair)
-
-Pluralization Rules:
-1. Basic: add numbers or "gbe" (many)
-2. Endings: -m→-mi, -o→-owi, -ƙ→-gi, -a→-ai
-3. Young forms: "la" (singular), "shibo" (plural)
-
-Cultural Context:
-- Goji people from Janga, Gwandum areas in Nigeria
-- Clans: Fiauri, Fio̱mmo, Dirang, Gomle
-- Values: community, elder respect, oral traditions
+LANGUAGE STRUCTURE:
+- Phonology: 6 vowels (a, e, i, o, u, o̱), long vowels, diphthongs, 24 consonants with tone levels
+- Grammar: Various pluralization rules and sentence structures
+- Cultural Context: Rich traditions from Janga, Gwandum areas in Nigeria
 
 ${enhancedContext}
 
@@ -201,13 +189,10 @@ ADAPTIVE TEACHING APPROACH:
 Current lesson context: ${lessonContext || 'General conversation'}
 
 ${searchResults.dictionary.length === 0 && searchResults.cultural.length === 0 ? `
-IMPORTANT FALLBACK: Since no specific database matches were found, use your comprehensive Goji knowledge above to provide helpful responses. Always be encouraging and provide practical examples. Focus on:
-- Teaching basic vocabulary and pronunciation
-- Explaining grammar patterns
-- Sharing cultural insights
-- Providing encouragement and practice suggestions
-- Using the learner's native language when helpful
-` : ''}
+IMPORTANT: No specific matches found in the database. Try to help based on general Goji language knowledge, but emphasize that you have access to over 1100 words in the dictionary if they want to ask about specific vocabulary.
+` : `
+IMPORTANT: Use the vocabulary and cultural information provided above from the database. This is current, accurate information from the comprehensive Goji dictionary.
+`}
 
 Be encouraging, culturally sensitive, and adapt to the learner's pace and interests.`;
 
