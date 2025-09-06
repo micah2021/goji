@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Plus, Volume2, Users, Home, TreePine, Apple, BookOpen, Database } from "lucide-react";
+import { Search, Volume2, Users, Home, TreePine, Apple, BookOpen, Database } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -7,8 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { BulkImportDialog } from "@/components/dictionary/BulkImportDialog";
-import { KushiImportButton } from "@/components/dictionary/KushiImportButton";
 
 interface DictionaryEntry {
   id: string;
@@ -209,19 +207,9 @@ const DictionaryPage = () => {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Kamus Goji</h1>
-            <p className="text-sm text-muted-foreground">Goji Dictionary & Grammar</p>
-          </div>
-          <div className="flex gap-2">
-            <KushiImportButton />
-            <BulkImportDialog onImportComplete={fetchEntries} />
-            <Button size="sm" className="flex items-center space-x-2">
-              <Plus className="h-4 w-4" />
-              <span>Add Word</span>
-            </Button>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Kamus Goji</h1>
+          <p className="text-sm text-muted-foreground">Goji Dictionary & Grammar</p>
         </div>
 
         <Tabs defaultValue="dictionary" className="w-full">

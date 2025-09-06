@@ -17,12 +17,12 @@ const LearnPage = () => {
       </div>
 
       <Tabs defaultValue="vocabulary" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 gap-1">
-          <TabsTrigger value="vocabulary" className="text-xs md:text-sm">Vocabulary</TabsTrigger>
-          <TabsTrigger value="lessons" className="text-xs md:text-sm">Lessons</TabsTrigger>
-          <TabsTrigger value="dictionary" className="text-xs md:text-sm">Dictionary</TabsTrigger>
-          <TabsTrigger value="phonology" className="text-xs md:text-sm">Sounds</TabsTrigger>
-          <TabsTrigger value="stories" className="text-xs md:text-sm">Stories</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-5 gap-0.5">
+          <TabsTrigger value="vocabulary" className="text-xs px-1">Vocab</TabsTrigger>
+          <TabsTrigger value="lessons" className="text-xs px-1">Lessons</TabsTrigger>
+          <TabsTrigger value="dictionary" className="text-xs px-1">Dictionary</TabsTrigger>
+          <TabsTrigger value="phonology" className="text-xs px-1">Sounds</TabsTrigger>
+          <TabsTrigger value="stories" className="text-xs px-1">Stories</TabsTrigger>
         </TabsList>
         
         <TabsContent value="vocabulary" className="mt-0">

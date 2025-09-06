@@ -97,11 +97,6 @@ const VocabularyLearning = () => {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
-        <div className="flex items-center justify-center gap-2">
-          <BookOpen className="w-6 h-6 text-primary" />
-          <h2 className="text-2xl font-bold text-foreground">Vocabulary Learning</h2>
-          <Sparkles className="w-6 h-6 text-primary" />
-        </div>
         <p className="text-sm text-muted-foreground">
           Learn Goji words from the academic dictionary
         </p>
