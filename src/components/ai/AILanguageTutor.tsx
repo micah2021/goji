@@ -30,8 +30,22 @@ export const AILanguageTutor = () => {
   const { toast } = useToast();
 
   const handleSendMessage = async () => {
-    console.log('handleSendMessage called with input:', inputMessage);
-    if (!inputMessage.trim()) return;
+    console.log('🚀 handleSendMessage called with input:', inputMessage);
+    console.log('🔐 User authenticated:', !!user, user?.id);
+    
+    if (!inputMessage.trim()) {
+      console.log('❌ Empty message, returning');
+      return;
+    }
+
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to use the AI tutor.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const userMessage: Message = {
       role: 'user',
@@ -44,7 +58,7 @@ export const AILanguageTutor = () => {
     setIsLoading(true);
 
     try {
-      console.log('Starting AI tutor request...');
+      console.log('🧠 Starting AI tutor request...');
       const conversationHistory = messages.map(msg => ({
         role: msg.role,
         content: msg.content
@@ -60,24 +74,30 @@ export const AILanguageTutor = () => {
         contextPrompt += ' (Focus on Goji culture, traditions, and stories)';
       }
 
-      console.log('Calling enhanced-ai-tutor with:', {
+      const requestBody = { 
         userInput: contextPrompt,
-        userId: user?.id,
-        mode: currentMode
-      });
+        conversationHistory,
+        userId: user.id,
+        lessonContext: `Goji language learning - ${currentMode} mode`
+      };
+
+      console.log('📡 Calling enhanced-ai-tutor with:', requestBody);
 
       const { data, error } = await supabase.functions.invoke('enhanced-ai-tutor', {
-        body: { 
-          userInput: contextPrompt,
-          conversationHistory,
-          userId: user?.id,
-          lessonContext: `Goji language learning - ${currentMode} mode`
-        }
+        body: requestBody
       });
 
-      console.log('Function response:', { data, error });
+      console.log('📝 Function response:', { data, error });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Supabase function error:', error);
+        throw new Error(`Function error: ${error.message || 'Unknown error'}`);
+      }
+
+      if (!data || !data.response) {
+        console.error('❌ Invalid response format:', data);
+        throw new Error('Invalid response from AI tutor');
+      }
 
       const assistantMessage: Message = {
         role: 'assistant',
@@ -94,11 +114,22 @@ export const AILanguageTutor = () => {
           description: `Found ${data.context_used.dictionary_matches} vocabulary matches and ${data.context_used.cultural_matches} cultural contexts.`,
         });
       }
+
+      console.log('✅ AI tutor response processed successfully');
     } catch (error) {
-      console.error('AI tutor error:', error);
+      console.error('💥 AI tutor error:', error);
+      
+      // Add a fallback message for the user
+      const errorMessage: Message = {
+        role: 'assistant',
+        content: 'Sorry, I\'m having trouble connecting right now. Please try again in a moment. The AI tutor service might be temporarily unavailable.',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+      
       toast({
         title: "Error communicating with tutor",
-        description: "Please try again later.",
+        description: error instanceof Error ? error.message : "Please try again later.",
         variant: "destructive",
       });
     } finally {
