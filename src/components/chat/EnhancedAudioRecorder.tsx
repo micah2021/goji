@@ -25,9 +25,18 @@ const EnhancedAudioRecorder = ({ conversationId, onAudioUploaded, disabled }: En
 
   const startRecording = async () => {
     try {
+      // Check if we're on HTTPS (required for mobile)
+      if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+        toast({ 
+          title: "HTTPS Required", 
+          description: "Audio recording requires a secure connection on mobile devices", 
+          variant: "destructive" 
+        });
+        return;
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
-          sampleRate: 24000,
           channelCount: 1,
           echoCancellation: true,
           noiseSuppression: true,
@@ -36,9 +45,20 @@ const EnhancedAudioRecorder = ({ conversationId, onAudioUploaded, disabled }: En
       });
       
       streamRef.current = stream;
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus'
-      });
+      
+      // Use compatible MIME types for mobile
+      let mimeType = 'audio/webm';
+      if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+        mimeType = 'audio/webm;codecs=opus';
+      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        mimeType = 'audio/mp4';
+      } else if (MediaRecorder.isTypeSupported('audio/aac')) {
+        mimeType = 'audio/aac';
+      } else if (MediaRecorder.isTypeSupported('audio/mpeg')) {
+        mimeType = 'audio/mpeg';
+      }
+      
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
@@ -51,8 +71,8 @@ const EnhancedAudioRecorder = ({ conversationId, onAudioUploaded, disabled }: En
       };
 
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        await processAndUploadAudio(audioBlob);
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+        await processAndUploadAudio(audioBlob, mimeType);
         cleanupRecording();
       };
 
@@ -96,12 +116,16 @@ const EnhancedAudioRecorder = ({ conversationId, onAudioUploaded, disabled }: En
     setRecordingTime(0);
   };
 
-  const processAndUploadAudio = async (audioBlob: Blob) => {
+  const processAndUploadAudio = async (audioBlob: Blob, mimeType: string) => {
     if (!user) return;
 
     setIsUploading(true);
     try {
-      const fileName = `audio_${Date.now()}_${user.id}.webm`;
+      // Determine file extension based on MIME type
+      const extension = mimeType.includes('mp4') ? 'mp4' : 
+                       mimeType.includes('aac') ? 'aac' : 
+                       mimeType.includes('mpeg') ? 'mp3' : 'webm';
+      const fileName = `audio_${Date.now()}_${user.id}.${extension}`;
       
       // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
@@ -142,7 +166,7 @@ const EnhancedAudioRecorder = ({ conversationId, onAudioUploaded, disabled }: En
           file_url: publicUrl,
           file_size: audioSize,
           duration_seconds: duration,
-          audio_format: 'webm',
+          audio_format: extension,
           processing_status: 'pending'
         });
 
