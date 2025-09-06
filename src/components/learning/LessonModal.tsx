@@ -57,15 +57,15 @@ export const LessonModal = ({ isOpen, onClose, lesson }: LessonModalProps) => {
 
     // Generate lesson content based on lesson title
     const lessonContentMap: { [key: string]: LessonWord[] } = {
-      'Body Parts': [
-        { id: '1', goji: 'kunu', english: 'head', hausa: 'kai', pronunciation: 'KU-nu', example: 'Kunu na - My head' },
-        { id: '2', goji: 'ichi', english: 'eye', hausa: 'ido', pronunciation: 'I-chi', example: 'Ichi palou - Two eyes' },
-        { id: '3', goji: 'hinu', english: 'ear', hausa: 'kunne', pronunciation: 'HI-nu', example: 'Hinu palou - Two ears' },
-        { id: '4', goji: 'mulu', english: 'mouth', hausa: 'baki', pronunciation: 'MU-lu', example: 'Mulu babba - Big mouth' },
-        { id: '5', goji: 'chindi', english: 'nose', hausa: 'hanci', pronunciation: 'CHIN-di', example: 'Chindi dogon - Long nose' },
-        { id: '6', goji: 'kala', english: 'hand/arm', hausa: 'hannu', pronunciation: 'KA-la', example: 'Kala palou - Two hands' },
-        { id: '7', goji: 'chafan', english: 'leg/foot', hausa: 'kafa', pronunciation: 'CHA-fan', example: 'Chafan palou - Two legs' },
-        { id: '8', goji: 'timbi', english: 'stomach/belly', hausa: 'ciki', pronunciation: 'TIM-bi', example: 'Timbi babba - Big stomach' }
+      'Basic Things': [
+        { id: '1', goji: 'àɗò', english: 'eye', hausa: 'ido', pronunciation: 'à-ɗò', example: 'àɗò fari - white eye' },
+        { id: '2', goji: 'àɗéewè', english: 'bird', hausa: 'tsuntsu', pronunciation: 'à-ɗéé-wè', example: 'àɗéewè ja - red bird' },
+        { id: '3', goji: 'àlàw', english: 'leaf', hausa: 'ganye', pronunciation: 'à-làw', example: 'àlàw kore - green leaf' },
+        { id: '4', goji: 'àládè', english: 'pig', hausa: 'alade', pronunciation: 'à-lá-dè', example: 'àládè babba - big pig' },
+        { id: '5', goji: 'àlúurà', english: 'needle', hausa: 'allura', pronunciation: 'à-lúu-rà', example: 'àlúurà kaifi - sharp needle' },
+        { id: '6', goji: 'àllágà', english: 'house rat', hausa: 'ɓera', pronunciation: 'àl-lá-gà', example: 'àllágà karami - small rat' },
+        { id: '7', goji: 'rêw', english: 'python', hausa: 'mesa', pronunciation: 'rêw', example: 'rêw dogon - long python' },
+        { id: '8', goji: 'àɗúnúnò', english: 'horn', hausa: 'ƙaho', pronunciation: 'à-ɗú-nú-nò', example: 'àɗúnúnò kaifi - sharp horn' }
       ],
       'Family Members': [
         { id: '1', goji: 'shuji', english: 'father', hausa: 'uba', pronunciation: 'SHU-ji', example: 'Shuji na - My father' },
@@ -103,7 +103,7 @@ export const LessonModal = ({ isOpen, onClose, lesson }: LessonModalProps) => {
       ]
     };
 
-    const content = lessonContentMap[lesson.title] || lessonContentMap['Body Parts'];
+    const content = lessonContentMap[lesson.title] || lessonContentMap['Basic Things'];
     setLessonWords(content.slice(0, lesson.vocabularyCount || 8));
   };
 
