@@ -280,11 +280,16 @@ const StoriesPage = () => {
                 <div className="space-y-2">
                   <div className="space-y-2">
                     {story.audio_url ? (
-                      <AudioPlayer 
-                        audioUrl={story.audio_url}
-                        className="w-full"
-                        showWaveform={false}
-                      />
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-1">
+                          Audio URL: {story.audio_url.split('/').pop()}
+                        </div>
+                        <AudioPlayer 
+                          audioUrl={story.audio_url}
+                          className="w-full"
+                          showWaveform={false}
+                        />
+                      </div>
                     ) : (
                       <div className="text-center p-3 bg-muted/50 rounded-lg">
                         <p className="text-xs text-muted-foreground">
