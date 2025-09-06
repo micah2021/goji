@@ -94,9 +94,18 @@ const AuthPage = () => {
       });
 
       if (error) {
+        let errorMessage = error.message;
+        
+        // Handle phone provider error specifically
+        if (error.message.includes('Phone provider not supported') || 
+            error.message.includes('SMS not configured') ||
+            error.message.includes('provider')) {
+          errorMessage = "Phone authentication is not configured. Please use email signup or contact support to enable SMS authentication.";
+        }
+        
         toast({
           title: "Error",
-          description: error.message,
+          description: errorMessage,
           variant: "destructive"
         });
         return;
@@ -195,9 +204,18 @@ const AuthPage = () => {
       });
 
       if (error) {
+        let errorMessage = error.message;
+        
+        // Handle phone provider error specifically
+        if (error.message.includes('Phone provider not supported') || 
+            error.message.includes('SMS not configured') ||
+            error.message.includes('provider')) {
+          errorMessage = "Phone authentication is not configured. Please use email signin or contact support to enable SMS authentication.";
+        }
+        
         toast({
           title: "Error",
-          description: error.message,
+          description: errorMessage,
           variant: "destructive"
         });
         return;
@@ -257,51 +275,53 @@ const AuthPage = () => {
           backgroundImage: "url('/lovable-uploads/97d6d151-c5ea-473d-9760-e6950ec3c358.png')"
         }}
       />
-      <div className="min-h-screen flex items-center justify-center p-4 relative z-10">
-        <Card className="w-full max-w-md bg-card/90 backdrop-blur-sm">
-        <CardHeader className="text-center">
-          <img src="/goji-logo.png" alt="Goji" className="h-16 w-16 mx-auto mb-4" />
-          <CardTitle className="flex items-center justify-center gap-2">
+      <div className="min-h-screen flex items-center justify-center p-3 sm:p-4 relative z-10 safe-area-pb">
+        <Card className="w-full max-w-sm sm:max-w-md bg-card/95 backdrop-blur-sm border-2 shadow-lg">
+        <CardHeader className="text-center pb-4 px-4 sm:px-6">
+          <img src="/goji-logo.png" alt="Goji" className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-3" />
+          <CardTitle className="flex items-center justify-center gap-2 text-lg sm:text-xl">
             Welcome to Goji Community
           </CardTitle>
-          <CardDescription>Join the language preservation community with email or phone</CardDescription>
+          <CardDescription className="text-sm sm:text-base">Join the language preservation community with email or phone</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 sm:px-6 pb-6">
           <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 h-10 sm:h-11">
+              <TabsTrigger value="signin" className="text-sm sm:text-base">Sign In</TabsTrigger>
+              <TabsTrigger value="signup" className="text-sm sm:text-base">Sign Up</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="signin">
+            <TabsContent value="signin" className="mt-4">
               <div className="space-y-4">
                 {/* Auth Method Selection */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 mb-4">
                   <Button
                     type="button"
                     variant={authMethod === 'email' ? 'default' : 'outline'}
-                    className="flex-1"
+                    className="flex-1 h-10 sm:h-11 text-sm sm:text-base min-h-[44px]"
                     onClick={() => {
                       setAuthMethod('email');
                       setOtpSent(false);
                       setFormData(prev => ({ ...prev, otp: "" }));
                     }}
                   >
-                    <Mail className="h-4 w-4 mr-2" />
-                    Email
+                    <Mail className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden xs:inline">Email</span>
+                    <span className="xs:hidden">✉️</span>
                   </Button>
                   <Button
                     type="button"
                     variant={authMethod === 'phone' ? 'default' : 'outline'}
-                    className="flex-1"
+                    className="flex-1 h-10 sm:h-11 text-sm sm:text-base min-h-[44px]"
                     onClick={() => {
                       setAuthMethod('phone');
                       setOtpSent(false);
                       setFormData(prev => ({ ...prev, otp: "" }));
                     }}
                   >
-                    <Smartphone className="h-4 w-4 mr-2" />
-                    Phone
+                    <Smartphone className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden xs:inline">Phone</span>
+                    <span className="xs:hidden">📱</span>
                   </Button>
                 </div>
 
@@ -309,31 +329,35 @@ const AuthPage = () => {
                 {authMethod === 'email' && (
                   <form onSubmit={handleEmailSignIn} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="signin-email">Email</Label>
+                      <Label htmlFor="signin-email" className="text-sm font-medium">Email</Label>
                       <Input
                         id="signin-email"
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                        className="h-11 text-base"
+                        placeholder="Enter your email"
                         required
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="signin-password">Password</Label>
+                      <Label htmlFor="signin-password" className="text-sm font-medium">Password</Label>
                       <div className="relative">
                         <Input
                           id="signin-password"
                           type={showPassword ? "text" : "password"}
                           value={formData.password}
                           onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                          className="h-11 text-base pr-10"
+                          placeholder="Enter your password"
                           required
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3"
+                          className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
                           onClick={() => setShowPassword(!showPassword)}
                         >
                           {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -341,7 +365,7 @@ const AuthPage = () => {
                       </div>
                     </div>
                     
-                    <Button type="submit" className="w-full" disabled={isLoading}>
+                    <Button type="submit" className="w-full h-11 text-base font-medium" disabled={isLoading}>
                       {isLoading ? "Signing in..." : "Sign In"}
                     </Button>
                   </form>
@@ -351,21 +375,25 @@ const AuthPage = () => {
                 {authMethod === 'phone' && !otpSent && (
                   <form onSubmit={handlePhoneSignIn} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="signin-phone">Phone Number</Label>
+                      <Label htmlFor="signin-phone" className="text-sm font-medium">Phone Number</Label>
                       <Input
                         id="signin-phone"
                         type="tel"
                         placeholder="+1234567890"
                         value={formData.phone}
                         onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                        className="h-11 text-base"
                         required
                       />
-                      <p className="text-xs text-muted-foreground">
-                        Enter your phone number with country code (e.g., +1234567890)
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Enter your phone number with country code (e.g., +1234567890). 
+                        <span className="block mt-1 text-amber-600 dark:text-amber-400 font-medium">
+                          Note: SMS authentication may not be configured yet.
+                        </span>
                       </p>
                     </div>
                     
-                    <Button type="submit" className="w-full" disabled={isLoading}>
+                    <Button type="submit" className="w-full h-11 text-base font-medium" disabled={isLoading}>
                       {isLoading ? "Sending OTP..." : "Send Verification Code"}
                     </Button>
                   </form>
@@ -375,7 +403,7 @@ const AuthPage = () => {
                 {authMethod === 'phone' && otpSent && (
                   <form onSubmit={verifyOTP} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="signin-otp">Verification Code</Label>
+                      <Label htmlFor="signin-otp" className="text-sm font-medium">Verification Code</Label>
                       <Input
                         id="signin-otp"
                         type="text"
@@ -383,14 +411,17 @@ const AuthPage = () => {
                         value={formData.otp}
                         onChange={(e) => setFormData(prev => ({ ...prev, otp: e.target.value }))}
                         maxLength={6}
+                        className="h-11 text-base text-center text-lg tracking-widest"
+                        autoComplete="one-time-code"
+                        inputMode="numeric"
                         required
                       />
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-muted-foreground text-center">
                         Enter the 6-digit code sent to {formData.phone}
                       </p>
                     </div>
                     
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <Button 
                         type="button" 
                         variant="outline" 
@@ -398,11 +429,11 @@ const AuthPage = () => {
                           setOtpSent(false);
                           setFormData(prev => ({ ...prev, otp: "" }));
                         }}
-                        className="flex-1"
+                        className="flex-1 h-11 text-base"
                       >
                         Change Number
                       </Button>
-                      <Button type="submit" className="flex-1" disabled={isVerifying}>
+                      <Button type="submit" className="flex-1 h-11 text-base font-medium" disabled={isVerifying}>
                         {isVerifying ? "Verifying..." : "Verify & Sign In"}
                       </Button>
                     </div>
@@ -411,35 +442,37 @@ const AuthPage = () => {
               </div>
             </TabsContent>
             
-            <TabsContent value="signup">
+            <TabsContent value="signup" className="mt-4">
               <div className="space-y-4">
                 {/* Auth Method Selection */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 mb-4">
                   <Button
                     type="button"
                     variant={authMethod === 'email' ? 'default' : 'outline'}
-                    className="flex-1"
+                    className="flex-1 h-10 sm:h-11 text-sm sm:text-base min-h-[44px]"
                     onClick={() => {
                       setAuthMethod('email');
                       setOtpSent(false);
                       setFormData(prev => ({ ...prev, otp: "" }));
                     }}
                   >
-                    <Mail className="h-4 w-4 mr-2" />
-                    Email
+                    <Mail className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden xs:inline">Email</span>
+                    <span className="xs:hidden">✉️</span>
                   </Button>
                   <Button
                     type="button"
                     variant={authMethod === 'phone' ? 'default' : 'outline'}
-                    className="flex-1"
+                    className="flex-1 h-10 sm:h-11 text-sm sm:text-base min-h-[44px]"
                     onClick={() => {
                       setAuthMethod('phone');
                       setOtpSent(false);
                       setFormData(prev => ({ ...prev, otp: "" }));
                     }}
                   >
-                    <Smartphone className="h-4 w-4 mr-2" />
-                    Phone
+                    <Smartphone className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden xs:inline">Phone</span>
+                    <span className="xs:hidden">📱</span>
                   </Button>
                 </div>
 
@@ -447,42 +480,47 @@ const AuthPage = () => {
                 {!otpSent && (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="fullName">Full Name</Label>
+                      <Label htmlFor="fullName" className="text-sm font-medium">Full Name</Label>
                       <Input
                         id="fullName"
                         value={formData.fullName}
                         onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
+                        className="h-11 text-base"
+                        placeholder="Enter your full name"
                         required
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
+                      <Label htmlFor="username" className="text-sm font-medium">Username</Label>
                       <Input
                         id="username"
                         value={formData.username}
                         onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                        className="h-11 text-base"
+                        placeholder="Choose a username"
                         required
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="location">Location</Label>
+                      <Label htmlFor="location" className="text-sm font-medium">Location</Label>
                       <Input
                         id="location"
                         value={formData.location}
                         onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                         placeholder="Optional"
+                        className="h-11 text-base"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="role">Role</Label>
+                      <Label htmlFor="role" className="text-sm font-medium">Role</Label>
                       <Select value={formData.role} onValueChange={(value: "member" | "admin") => setFormData(prev => ({ ...prev, role: value }))}>
-                        <SelectTrigger>
+                        <SelectTrigger className="h-11">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-popover border border-border shadow-md">
                           <SelectItem value="member">Member</SelectItem>
                           <SelectItem value="admin">Admin</SelectItem>
                         </SelectContent>
@@ -537,21 +575,25 @@ const AuthPage = () => {
                 {authMethod === 'phone' && !otpSent && (
                   <form onSubmit={sendOTP} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="signup-phone">Phone Number</Label>
+                      <Label htmlFor="signup-phone" className="text-sm font-medium">Phone Number</Label>
                       <Input
                         id="signup-phone"
                         type="tel"
                         placeholder="+1234567890"
                         value={formData.phone}
                         onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                        className="h-11 text-base"
                         required
                       />
-                      <p className="text-xs text-muted-foreground">
-                        Enter your phone number with country code (e.g., +1234567890)
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Enter your phone number with country code (e.g., +1234567890). 
+                        <span className="block mt-1 text-amber-600 dark:text-amber-400 font-medium">
+                          Note: SMS authentication may not be configured yet.
+                        </span>
                       </p>
                     </div>
                     
-                    <Button type="submit" className="w-full" disabled={isLoading}>
+                    <Button type="submit" className="w-full h-11 text-base font-medium" disabled={isLoading}>
                       {isLoading ? "Sending OTP..." : "Send Verification Code"}
                     </Button>
                   </form>
@@ -561,7 +603,7 @@ const AuthPage = () => {
                 {authMethod === 'phone' && otpSent && (
                   <form onSubmit={verifyOTP} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="signup-otp">Verification Code</Label>
+                      <Label htmlFor="signup-otp" className="text-sm font-medium">Verification Code</Label>
                       <Input
                         id="signup-otp"
                         type="text"
@@ -569,14 +611,17 @@ const AuthPage = () => {
                         value={formData.otp}
                         onChange={(e) => setFormData(prev => ({ ...prev, otp: e.target.value }))}
                         maxLength={6}
+                        className="h-11 text-base text-center text-lg tracking-widest"
+                        autoComplete="one-time-code"
+                        inputMode="numeric"
                         required
                       />
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-muted-foreground text-center">
                         Enter the 6-digit code sent to {formData.phone}
                       </p>
                     </div>
                     
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <Button 
                         type="button" 
                         variant="outline" 
@@ -584,11 +629,11 @@ const AuthPage = () => {
                           setOtpSent(false);
                           setFormData(prev => ({ ...prev, otp: "" }));
                         }}
-                        className="flex-1"
+                        className="flex-1 h-11 text-base"
                       >
                         Change Number
                       </Button>
-                      <Button type="submit" className="flex-1" disabled={isVerifying}>
+                      <Button type="submit" className="flex-1 h-11 text-base font-medium" disabled={isVerifying}>
                         {isVerifying ? "Verifying..." : "Verify & Create Account"}
                       </Button>
                     </div>
@@ -610,7 +655,7 @@ const AuthPage = () => {
             
             <Button
               variant="outline"
-              className="w-full mt-4"
+              className="w-full mt-4 h-11 text-base font-medium"
               onClick={handleGoogleSignIn}
               disabled={isLoading}
             >
@@ -632,7 +677,7 @@ const AuthPage = () => {
                   fill="#EA4335"
                 />
               </svg>
-              Continue with Google
+              <span className="text-sm sm:text-base">Continue with Google</span>
             </Button>
           </div>
         </CardContent>
