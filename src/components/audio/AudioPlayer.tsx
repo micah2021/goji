@@ -79,6 +79,18 @@ const AudioPlayer = ({ audioUrl, className, showWaveform = false }: AudioPlayerP
           audio.currentTime = 0;
         }
 
+        // Mobile-specific: Load the audio first
+        if (audio.readyState < 2) {
+          audio.load();
+          await new Promise((resolve) => {
+            const handleCanPlay = () => {
+              audio.removeEventListener('canplay', handleCanPlay);
+              resolve(void 0);
+            };
+            audio.addEventListener('canplay', handleCanPlay);
+          });
+        }
+
         const playPromise = audio.play();
         
         if (playPromise !== undefined) {
@@ -88,9 +100,11 @@ const AudioPlayer = ({ audioUrl, className, showWaveform = false }: AudioPlayerP
       }
     } catch (error) {
       console.error('Play/pause error:', error);
+      // Try to reload the audio element for mobile
+      audio.load();
       toast({
         title: "Playback Error",
-        description: "Could not play audio. Try tapping the audio player.",
+        description: "Could not play audio. Try tapping again.",
         variant: "destructive"
       });
     }
@@ -157,9 +171,11 @@ const AudioPlayer = ({ audioUrl, className, showWaveform = false }: AudioPlayerP
       <audio
         ref={audioRef}
         src={audioUrl}
-        preload="metadata"
+        preload="none"
         playsInline
+        controls={false}
         className="hidden"
+        crossOrigin="anonymous"
       />
     </div>
   );
