@@ -372,6 +372,51 @@ export type Database = {
         }
         Relationships: []
       }
+      community_posts: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_featured: boolean | null
+          likes_count: number | null
+          media_url: string | null
+          post_type: string
+          replies_count: number | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_featured?: boolean | null
+          likes_count?: number | null
+          media_url?: string | null
+          post_type?: string
+          replies_count?: number | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_featured?: boolean | null
+          likes_count?: number | null
+          media_url?: string | null
+          post_type?: string
+          replies_count?: number | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       competition_submissions: {
         Row: {
           algorithm_details: Json
@@ -1622,6 +1667,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_leaderboard"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       newsletter_subscriptions: {
@@ -1659,6 +1711,83 @@ export type Database = {
           unsubscribed_at?: string | null
         }
         Relationships: []
+      }
+      post_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_replies: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          likes_count: number | null
+          parent_reply_id: string | null
+          post_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          likes_count?: number | null
+          parent_reply_id?: string | null
+          post_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          likes_count?: number | null
+          parent_reply_id?: string | null
+          post_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_replies_parent_reply_id_fkey"
+            columns: ["parent_reply_id"]
+            isOneToOne: false
+            referencedRelation: "post_replies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_replies_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_categories: {
         Row: {
@@ -1777,6 +1906,35 @@ export type Database = {
         }
         Relationships: []
       }
+      reply_likes: {
+        Row: {
+          created_at: string
+          id: string
+          reply_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reply_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reply_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reply_likes_reply_id_fkey"
+            columns: ["reply_id"]
+            isOneToOne: false
+            referencedRelation: "post_replies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shared_experiments: {
         Row: {
           experiment_id: string
@@ -1817,6 +1975,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_achievements: {
+        Row: {
+          achievement_level: number | null
+          achievement_type: string
+          description: string
+          icon: string
+          id: string
+          points_earned: number | null
+          title: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_level?: number | null
+          achievement_type: string
+          description: string
+          icon: string
+          id?: string
+          points_earned?: number | null
+          title: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_level?: number | null
+          achievement_type?: string
+          description?: string
+          icon?: string
+          id?: string
+          points_earned?: number | null
+          title?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_presence: {
         Row: {
@@ -2002,7 +2196,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      community_stats: {
+        Row: {
+          posts_this_week: number | null
+          posts_today: number | null
+          total_contributors: number | null
+          total_likes: number | null
+          total_posts: number | null
+          total_replies: number | null
+        }
+        Relationships: []
+      }
+      user_leaderboard: {
+        Row: {
+          achievements_count: number | null
+          contributions_approved: number | null
+          current_streak: number | null
+          display_name: string | null
+          likes_received: number | null
+          posts_count: number | null
+          rank: number | null
+          total_points: number | null
+          user_id: string | null
+          username: string | null
+          words_mastered: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       approve_contribution: {
