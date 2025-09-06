@@ -4,7 +4,6 @@ import Navigation from "@/components/layout/Navigation";
 import ChatPage from "@/components/pages/ChatPage";
 import LearnPage from "@/components/pages/LearnPage";
 import TutorPage from "@/components/pages/TutorPage";
-import CommunityPage from "@/components/pages/CommunityPage";
 import AboutPage from "@/components/pages/AboutPage";
 import ProfilePage from "@/components/pages/ProfilePage";
 import AuthPage from "@/components/auth/AuthPage";
@@ -37,8 +36,6 @@ const Index = () => {
         return <LearnPage />;
       case "tutor":
         return <TutorPage />;
-      case "community":
-        return <CommunityPage />;
       case "about":
         return <AboutPage />;
       case "profile":
