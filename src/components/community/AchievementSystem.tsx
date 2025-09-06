@@ -44,25 +44,34 @@ export const AchievementSystem = () => {
     try {
       const { data, error } = await supabase
         .from('user_achievements')
-        .select(`
-          *,
-          profiles:user_id (username, display_name)
-        `)
+        .select('*')
         .order('unlocked_at', { ascending: false })
         .limit(20);
       
       if (error) throw error;
       
-      const achievementsWithUserFlag = (data || []).map(achievement => ({
-        ...achievement,
-        is_current_user: user ? achievement.user_id === user.id : false,
-        profiles: Array.isArray(achievement.profiles) && achievement.profiles.length > 0 ? {
-          username: achievement.profiles[0].username,
-          display_name: achievement.profiles[0].display_name
-        } : null
-      }));
+      if (data && data.length > 0) {
+        // Get unique user IDs
+        const userIds = [...new Set(data.map(a => a.user_id))];
+        
+        // Fetch profiles for these users
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('user_id, username, display_name')
+          .in('user_id', userIds);
+
+        const profilesMap = new Map(profilesData?.map(p => [p.user_id, p]) || []);
       
-      setAchievements(achievementsWithUserFlag);
+        const achievementsWithUserFlag = data.map(achievement => ({
+          ...achievement,
+          is_current_user: user ? achievement.user_id === user.id : false,
+          profiles: profilesMap.get(achievement.user_id) || null
+        }));
+        
+        setAchievements(achievementsWithUserFlag);
+      } else {
+        setAchievements([]);
+      }
     } catch (error) {
       console.error('Error fetching achievements:', error);
     }

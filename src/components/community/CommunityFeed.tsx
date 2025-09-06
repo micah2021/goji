@@ -24,6 +24,7 @@ import {
   Clock
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { CommunityChallenge } from "./CommunityChallenge";
 
 interface CommunityPost {
   id: string;
@@ -119,36 +120,44 @@ export const CommunityFeed = () => {
     try {
       const { data, error } = await supabase
         .from('community_posts')
-        .select(`
-          *,
-          profiles:user_id (username, display_name)
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(20);
 
       if (error) throw error;
 
-      // Check which posts current user has liked
-      if (user && data) {
-        const postIds = data.map(p => p.id);
-        const { data: userLikes } = await supabase
-          .from('post_likes')
-          .select('post_id')
-          .eq('user_id', user.id)
-          .in('post_id', postIds);
-
-        const likedPostIds = new Set(userLikes?.map(l => l.post_id) || []);
+      if (data && data.length > 0) {
+        // Get unique user IDs
+        const userIds = [...new Set(data.map(p => p.user_id))];
         
-        const postsWithLikes = data.map(post => ({
+        // Fetch profiles for these users
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('user_id, username, display_name')
+          .in('user_id', userIds);
+
+        const profilesMap = new Map(profilesData?.map(p => [p.user_id, p]) || []);
+
+        // Check which posts current user has liked
+        let likedPostIds = new Set();
+        if (user) {
+          const postIds = data.map(p => p.id);
+          const { data: userLikes } = await supabase
+            .from('post_likes')
+            .select('post_id')
+            .eq('user_id', user.id)
+            .in('post_id', postIds);
+
+          likedPostIds = new Set(userLikes?.map(l => l.post_id) || []);
+        }
+        
+        const postsWithProfiles = data.map(post => ({
           ...post,
           user_liked: likedPostIds.has(post.id),
-          profiles: Array.isArray(post.profiles) && post.profiles.length > 0 ? {
-            username: post.profiles[0].username,
-            display_name: post.profiles[0].display_name
-          } : null
+          profiles: profilesMap.get(post.user_id) || null
         }));
         
-        setPosts(postsWithLikes as CommunityPost[]);
+        setPosts(postsWithProfiles);
       } else {
         setPosts([]);
       }
@@ -195,24 +204,33 @@ export const CommunityFeed = () => {
     try {
       const { data, error } = await supabase
         .from('user_achievements')
-        .select(`
-          *,
-          profiles:user_id (username, display_name)
-        `)
+        .select('*')
         .order('unlocked_at', { ascending: false })
         .limit(10);
       
       if (error) throw error;
       
-      const processedAchievements = (data || []).map(achievement => ({
-        ...achievement,
-        profiles: Array.isArray(achievement.profiles) && achievement.profiles.length > 0 ? {
-          username: achievement.profiles[0].username,
-          display_name: achievement.profiles[0].display_name
-        } : null
-      }));
-      
-      setAchievements(processedAchievements);
+      if (data && data.length > 0) {
+        // Get unique user IDs
+        const userIds = [...new Set(data.map(a => a.user_id))];
+        
+        // Fetch profiles for these users
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('user_id, username, display_name')
+          .in('user_id', userIds);
+
+        const profilesMap = new Map(profilesData?.map(p => [p.user_id, p]) || []);
+        
+        const achievementsWithProfiles = data.map(achievement => ({
+          ...achievement,
+          profiles: profilesMap.get(achievement.user_id) || null
+        }));
+        
+        setAchievements(achievementsWithProfiles);
+      } else {
+        setAchievements([]);
+      }
     } catch (error) {
       console.error('Error fetching achievements:', error);
     }
@@ -486,7 +504,7 @@ export const CommunityFeed = () => {
           <TabsTrigger value="feed">Feed</TabsTrigger>
           <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
           <TabsTrigger value="achievements">Achievements</TabsTrigger>
-          <TabsTrigger value="featured">Featured</TabsTrigger>
+          <TabsTrigger value="featured">Challenges</TabsTrigger>
         </TabsList>
 
         <TabsContent value="feed" className="space-y-4">
@@ -657,75 +675,7 @@ export const CommunityFeed = () => {
         </TabsContent>
 
         <TabsContent value="featured" className="space-y-4">
-          {posts.filter(post => post.is_featured).length === 0 ? (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <Star className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No featured posts yet</h3>
-                <p className="text-muted-foreground">Check back later for featured community content!</p>
-              </CardContent>
-            </Card>
-          ) : (
-            posts.filter(post => post.is_featured).map((post) => (
-              <Card key={post.id} className="border-yellow-200 bg-yellow-50/50">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-3">
-                      <Avatar>
-                        <AvatarFallback>
-                          {post.profiles?.display_name?.[0] || post.profiles?.username?.[0] || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <Star className="h-4 w-4 text-yellow-500" />
-                          <CardTitle className="text-lg">{post.title}</CardTitle>
-                          <Badge className="bg-yellow-500">Featured</Badge>
-                        </div>
-                        <CardDescription>
-                          by {post.profiles?.display_name || post.profiles?.username || 'Anonymous'} • 
-                          {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
-                        </CardDescription>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm mb-4 whitespace-pre-wrap">{post.content}</p>
-                  
-                  {post.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {post.tags.map((tag, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          #{tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="flex items-center space-x-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleLike(post.id, post.user_liked || false)}
-                      className={post.user_liked ? 'text-red-500' : ''}
-                    >
-                      <Heart className={`h-4 w-4 mr-1 ${post.user_liked ? 'fill-current' : ''}`} />
-                      {post.likes_count}
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <MessageCircle className="h-4 w-4 mr-1" />
-                      {post.replies_count}
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Share2 className="h-4 w-4 mr-1" />
-                      Share
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
+          <CommunityChallenge />
         </TabsContent>
       </Tabs>
     </div>

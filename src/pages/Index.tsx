@@ -7,11 +7,12 @@ import TutorPage from "@/components/pages/TutorPage";
 import AboutPage from "@/components/pages/AboutPage";
 import ProfilePage from "@/components/pages/ProfilePage";
 import AuthPage from "@/components/auth/AuthPage";
+import { CommunityFeed } from "@/components/community/CommunityFeed";
 import gojiLogo from "@/assets/goji-logo.png";
 
 const Index = () => {
   const { user, loading } = useAuth();
-  const [activeTab, setActiveTab] = useState("chat");
+  const [activeTab, setActiveTab] = useState("community");
 
   if (loading) {
     return (
@@ -31,7 +32,7 @@ const Index = () => {
   const renderPage = () => {
     switch (activeTab) {
       case "community":
-        return <ChatPage />;
+        return <CommunityFeed />;
       case "learn":
         return <LearnPage />;
       case "tutor":
