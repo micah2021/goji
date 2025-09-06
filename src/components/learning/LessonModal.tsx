@@ -57,15 +57,15 @@ export const LessonModal = ({ isOpen, onClose, lesson }: LessonModalProps) => {
 
     // Generate lesson content based on lesson title
     const lessonContentMap: { [key: string]: LessonWord[] } = {
-      'Greetings & Introductions': [
-        { id: '1', goji: 'sannu', english: 'hello/greetings', hausa: 'sannu', pronunciation: 'SAN-nu', example: 'Sannu da safe - Good morning' },
-        { id: '2', goji: 'ina kwana', english: 'good morning', hausa: 'ina kwana', pronunciation: 'i-na KWA-na', example: 'Ina kwana? - How did you sleep?' },
-        { id: '3', goji: 'lafiya lau', english: 'how are you?', hausa: 'lafiya lau', pronunciation: 'la-FI-ya LAU', example: 'Lafiya lau? - How are you?' },
-        { id: '4', goji: 'kalau', english: 'fine/well', hausa: 'lafiya', pronunciation: 'ka-LAU', example: 'Kalau ne - I am fine' },
-        { id: '5', goji: 'na gode', english: 'thank you', hausa: 'na gode', pronunciation: 'na GO-de', example: 'Na gode sosai - Thank you very much' },
-        { id: '6', goji: 'babu komai', english: "you're welcome", hausa: 'babu komai', pronunciation: 'ba-BU ko-MAI', example: 'Babu komai - You are welcome' },
-        { id: '7', goji: 'sai gobe', english: 'see you tomorrow', hausa: 'sai gobe', pronunciation: 'SAI go-BE', example: 'Sai gobe - See you tomorrow' },
-        { id: '8', goji: 'mu je', english: 'goodbye/let us go', hausa: 'mu je', pronunciation: 'MU je', example: 'Mu je da lafiya - Go in peace' }
+      'Body Parts': [
+        { id: '1', goji: 'kunu', english: 'head', hausa: 'kai', pronunciation: 'KU-nu', example: 'Kunu na - My head' },
+        { id: '2', goji: 'ichi', english: 'eye', hausa: 'ido', pronunciation: 'I-chi', example: 'Ichi palou - Two eyes' },
+        { id: '3', goji: 'hinu', english: 'ear', hausa: 'kunne', pronunciation: 'HI-nu', example: 'Hinu palou - Two ears' },
+        { id: '4', goji: 'mulu', english: 'mouth', hausa: 'baki', pronunciation: 'MU-lu', example: 'Mulu babba - Big mouth' },
+        { id: '5', goji: 'chindi', english: 'nose', hausa: 'hanci', pronunciation: 'CHIN-di', example: 'Chindi dogon - Long nose' },
+        { id: '6', goji: 'kala', english: 'hand/arm', hausa: 'hannu', pronunciation: 'KA-la', example: 'Kala palou - Two hands' },
+        { id: '7', goji: 'chafan', english: 'leg/foot', hausa: 'kafa', pronunciation: 'CHA-fan', example: 'Chafan palou - Two legs' },
+        { id: '8', goji: 'timbi', english: 'stomach/belly', hausa: 'ciki', pronunciation: 'TIM-bi', example: 'Timbi babba - Big stomach' }
       ],
       'Family Members': [
         { id: '1', goji: 'shuji', english: 'father', hausa: 'uba', pronunciation: 'SHU-ji', example: 'Shuji na - My father' },
@@ -103,7 +103,7 @@ export const LessonModal = ({ isOpen, onClose, lesson }: LessonModalProps) => {
       ]
     };
 
-    const content = lessonContentMap[lesson.title] || lessonContentMap['Greetings & Introductions'];
+    const content = lessonContentMap[lesson.title] || lessonContentMap['Body Parts'];
     setLessonWords(content.slice(0, lesson.vocabularyCount || 8));
   };
 
