@@ -10,9 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Send, Trash2, Brain, Menu } from "lucide-react";
+import { Send, Trash2, Brain, Menu, ImageIcon, Volume2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import VoiceRecorder from "@/components/chat/VoiceRecorder";
+import ImageUploadDialog from "@/components/ui/image-upload-dialog";
 
 interface Message {
   id: string;
@@ -280,6 +281,36 @@ const ChatPage = () => {
     }
   };
 
+  const sendImageMessage = async (imageUrl: string, caption?: string) => {
+    if (!user || !communityConversationId) return;
+
+    try {
+      const messageText = caption || "[Image]";
+      const { error } = await supabase
+        .from("messages")
+        .insert({
+          user_id: user.id,
+          text: messageText,
+          audio_url: imageUrl, // Reusing audio_url field for media
+          tags: "general",
+          conversation_id: communityConversationId
+        });
+
+      if (error) throw error;
+      toast({
+        title: "Success",
+        description: "Image shared in chat!"
+      });
+    } catch (error) {
+      console.error('Error sending image:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send image",
+        variant: "destructive"
+      });
+    }
+  };
+
   const deleteMessage = async (messageId: string) => {
     try {
       const { error } = await supabase
@@ -445,10 +476,24 @@ const ChatPage = () => {
                         
                         {message.audio_url && (
                           <div className="mt-2">
-                            <audio controls className={`w-full ${isMobile ? 'max-w-full' : 'max-w-xs'}`}>
-                              <source src={message.audio_url} type="audio/webm" />
-                              Your browser does not support the audio element.
-                            </audio>
+                            {message.audio_url.includes('images/') ? (
+                              <div className="max-w-xs">
+                                <img 
+                                  src={message.audio_url} 
+                                  alt="Shared image" 
+                                  className="w-full h-auto rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                                  onClick={() => window.open(message.audio_url, '_blank')}
+                                />
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-2 bg-muted p-2 rounded-lg">
+                                <Volume2 className="h-4 w-4 text-muted-foreground" />
+                                <audio controls className={`w-full ${isMobile ? 'max-w-full' : 'max-w-xs'}`}>
+                                  <source src={message.audio_url} type="audio/webm" />
+                                  Your browser does not support the audio element.
+                                </audio>
+                              </div>
+                            )}
                           </div>
                         )}
                         
@@ -483,6 +528,15 @@ const ChatPage = () => {
                   placeholder={isMobile ? "Message..." : "Type your message in Goji or English..."}
                   disabled={isLoading}
                   className={`flex-1 ${isMobile ? 'text-sm h-9' : ''}`}
+                />
+                <ImageUploadDialog
+                  onUploadComplete={sendImageMessage}
+                  triggerButton={
+                    <Button variant="outline" size={isMobile ? "sm" : "default"} type="button">
+                      <ImageIcon className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
+                    </Button>
+                  }
+                  maxSizeMB={5}
                 />
                 <VoiceRecorder
                   conversationId={communityConversationId}

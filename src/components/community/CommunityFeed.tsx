@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useAuth } from "@/components/auth/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import ImageUploadDialog from "@/components/ui/image-upload-dialog";
 import { 
   Heart, 
   MessageCircle, 
@@ -21,7 +22,8 @@ import {
   Star,
   Award,
   Target,
-  Clock
+  Clock,
+  ImageIcon
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { CommunityChallenge } from "./CommunityChallenge";
@@ -97,7 +99,8 @@ export const CommunityFeed = () => {
     title: "",
     content: "",
     post_type: "post",
-    tags: ""
+    tags: "",
+    media_url: ""
   });
   const [showCreatePost, setShowCreatePost] = useState(false);
 
@@ -256,6 +259,7 @@ export const CommunityFeed = () => {
           title: newPost.title,
           content: newPost.content,
           post_type: newPost.post_type,
+          media_url: newPost.media_url || null,
           tags
         });
 
@@ -266,7 +270,7 @@ export const CommunityFeed = () => {
         description: "Your post has been created",
       });
 
-      setNewPost({ title: "", content: "", post_type: "post", tags: "" });
+      setNewPost({ title: "", content: "", post_type: "post", tags: "", media_url: "" });
       setShowCreatePost(false);
       fetchPosts();
     } catch (error) {
@@ -430,6 +434,52 @@ export const CommunityFeed = () => {
                     placeholder="goji, vocabulary, culture"
                   />
                 </div>
+                
+                {/* Image Upload */}
+                <div>
+                  <label className="text-sm font-medium">Add Image (optional)</label>
+                  <div className="flex gap-2 mt-1">
+                    <ImageUploadDialog
+                      onUploadComplete={(imageUrl, caption) => {
+                        setNewPost(prev => ({ 
+                          ...prev, 
+                          media_url: imageUrl,
+                          content: caption ? `${prev.content}\n\n${caption}` : prev.content
+                        }));
+                        toast({
+                          title: "Success",
+                          description: "Image attached to post!"
+                        });
+                      }}
+                      triggerButton={
+                        <Button variant="outline" type="button">
+                          <ImageIcon className="h-4 w-4 mr-2" />
+                          Add Image
+                        </Button>
+                      }
+                    />
+                    {newPost.media_url && (
+                      <Button 
+                        variant="outline" 
+                        type="button"
+                        onClick={() => setNewPost(prev => ({ ...prev, media_url: "" }))}
+                      >
+                        Remove Image
+                      </Button>
+                    )}
+                  </div>
+                  
+                  {newPost.media_url && (
+                    <div className="mt-2">
+                      <img 
+                        src={newPost.media_url} 
+                        alt="Preview" 
+                        className="w-32 h-32 object-cover rounded-lg"
+                      />
+                    </div>
+                  )}
+                </div>
+                
                 <Button onClick={createPost} className="w-full">
                   Create Post
                 </Button>
@@ -549,6 +599,17 @@ export const CommunityFeed = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm mb-4 whitespace-pre-wrap">{post.content}</p>
+                  
+                  {post.media_url && (
+                    <div className="mb-4">
+                      <img 
+                        src={post.media_url} 
+                        alt="Post image" 
+                        className="w-full max-w-md h-64 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => window.open(post.media_url, '_blank')}
+                      />
+                    </div>
+                  )}
                   
                   {post.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-4">
