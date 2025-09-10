@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AILanguageTutor } from "@/components/ai/AILanguageTutor";
 import { AIContentGenerator } from "@/components/ai/AIContentGenerator";
-import { Brain, Sparkles } from "lucide-react";
+import { FineTuningManager } from "@/components/ai/FineTuningManager";
+import { Brain, Sparkles, Settings } from "lucide-react";
 
 const TutorPage = () => {
   return (
@@ -18,7 +19,7 @@ const TutorPage = () => {
         </div>
 
         <Tabs defaultValue="tutor" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="tutor" className="flex items-center gap-2">
               <Brain className="w-4 h-4" />
               AI Tutor
@@ -26,6 +27,10 @@ const TutorPage = () => {
             <TabsTrigger value="generator" className="flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
               Content Generator
+            </TabsTrigger>
+            <TabsTrigger value="finetune" className="flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              Fine-tuning
             </TabsTrigger>
           </TabsList>
 
@@ -35,6 +40,10 @@ const TutorPage = () => {
 
           <TabsContent value="generator" className="mt-6">
             <AIContentGenerator />
+          </TabsContent>
+
+          <TabsContent value="finetune" className="mt-6">
+            <FineTuningManager />
           </TabsContent>
         </Tabs>
       </div>
