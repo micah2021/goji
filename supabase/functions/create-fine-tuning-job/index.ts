@@ -12,28 +12,44 @@ serve(async (req) => {
   }
 
   try {
-    const { trainingFile } = await req.json();
+    const formData = await req.formData();
+    const trainingFile = formData.get('trainingFile') as File;
+    
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
     if (!OPENAI_API_KEY) {
       throw new Error('OPENAI_API_KEY not set');
     }
 
+    if (!trainingFile) {
+      throw new Error('Training file not found in request');
+    }
+
+    console.log('Training file received:', trainingFile.name, trainingFile.size);
+
     // Step 1: Upload training file
-    const formData = new FormData();
-    formData.append('purpose', 'fine-tune');
-    formData.append('file', trainingFile);
+    const uploadFormData = new FormData();
+    uploadFormData.append('purpose', 'fine-tune');
+    uploadFormData.append('file', trainingFile);
 
     const uploadResponse = await fetch('https://api.openai.com/v1/files', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
       },
-      body: formData,
+      body: uploadFormData,
     });
 
     const uploadResult = await uploadResponse.json();
-    console.log('File uploaded:', uploadResult);
+    console.log('File upload response:', uploadResult);
+
+    if (uploadResult.error) {
+      throw new Error(`File upload failed: ${uploadResult.error.message}`);
+    }
+
+    if (!uploadResult.id) {
+      throw new Error('No file ID returned from OpenAI');
+    }
 
     // Step 2: Create fine-tuning job
     const finetuneResponse = await fetch('https://api.openai.com/v1/fine_tuning/jobs', {

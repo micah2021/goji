@@ -56,13 +56,27 @@ export const FineTuningManager = () => {
 
     setIsCreatingJob(true);
     try {
+      const formData = new FormData();
       const blob = new Blob([trainingData], { type: 'application/jsonl' });
+      formData.append('trainingFile', blob, 'goji-training-data.jsonl');
       
-      const { data, error } = await supabase.functions.invoke('create-fine-tuning-job', {
-        body: { trainingFile: blob }
+      const response = await fetch(`https://jeohrfwwewgtzgcsaxdu.supabase.co/functions/v1/create-fine-tuning-job`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Implb2hyZnd3ZXdndHpnY3NheGR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNzAyMTgsImV4cCI6MjA2ODk0NjIxOH0.PcgRMlG_g1C8hYcP28Sml-07IIi4QmZi7sRozsUbZKE`,
+        },
+        body: formData
       });
       
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
 
       toast({
         title: "Fine-tuning Job Created",
@@ -72,7 +86,7 @@ export const FineTuningManager = () => {
       console.error('Error creating fine-tuning job:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || 'Unknown error occurred',
         variant: "destructive",
       });
     } finally {
