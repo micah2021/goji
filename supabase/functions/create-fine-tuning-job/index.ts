@@ -12,8 +12,8 @@ serve(async (req) => {
   }
 
   try {
-    const formData = await req.formData();
-    const trainingFile = formData.get('trainingFile') as File;
+    console.log('Request method:', req.method);
+    console.log('Request headers:', Object.fromEntries(req.headers.entries()));
     
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
@@ -21,16 +21,21 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY not set');
     }
 
-    if (!trainingFile) {
-      throw new Error('Training file not found in request');
+    // Get the training data from request body
+    const { trainingData } = await req.json();
+    console.log('Training data length:', trainingData?.length);
+    
+    if (!trainingData) {
+      throw new Error('Training data not found in request');
     }
 
-    console.log('Training file received:', trainingFile.name, trainingFile.size);
+    // Create file blob from training data
+    const fileBlob = new Blob([trainingData], { type: 'application/jsonl' });
 
-    // Step 1: Upload training file
+    // Step 1: Upload training file to OpenAI
     const uploadFormData = new FormData();
     uploadFormData.append('purpose', 'fine-tune');
-    uploadFormData.append('file', trainingFile);
+    uploadFormData.append('file', fileBlob, 'goji-training-data.jsonl');
 
     const uploadResponse = await fetch('https://api.openai.com/v1/files', {
       method: 'POST',

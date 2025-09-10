@@ -56,27 +56,11 @@ export const FineTuningManager = () => {
 
     setIsCreatingJob(true);
     try {
-      const formData = new FormData();
-      const blob = new Blob([trainingData], { type: 'application/jsonl' });
-      formData.append('trainingFile', blob, 'goji-training-data.jsonl');
-      
-      const response = await fetch(`https://jeohrfwwewgtzgcsaxdu.supabase.co/functions/v1/create-fine-tuning-job`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Implb2hyZnd3ZXdndHpnY3NheGR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNzAyMTgsImV4cCI6MjA2ODk0NjIxOH0.PcgRMlG_g1C8hYcP28Sml-07IIi4QmZi7sRozsUbZKE`,
-        },
-        body: formData
+      const { data, error } = await supabase.functions.invoke('create-fine-tuning-job', {
+        body: { trainingData }
       });
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
-      }
+      if (error) throw error;
 
       toast({
         title: "Fine-tuning Job Created",
