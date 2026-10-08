@@ -137,6 +137,10 @@ export const LessonModal = ({ isOpen, onClose, lesson }: LessonModalProps) => {
     
     setLoading(true);
     try {
+      if (lessonWords.length === 0) {
+        throw new Error("Lesson has no words to complete");
+      }
+
       const percentage = (score / lessonWords.length) * 100;
       const xpEarned = Math.floor(percentage * 0.5); // Up to 50 XP per lesson
       
@@ -149,7 +153,7 @@ export const LessonModal = ({ isOpen, onClose, lesson }: LessonModalProps) => {
       }
       
       // Log completion in conversation analytics
-      await supabase
+      const { error } = await supabase
         .from('conversation_analytics')
         .insert({
           conversation_id: crypto.randomUUID(),
@@ -167,6 +171,10 @@ export const LessonModal = ({ isOpen, onClose, lesson }: LessonModalProps) => {
             xp_earned: xpEarned
           }
         });
+
+      if (error) {
+        throw error;
+      }
 
       toast({
         title: "Lesson Completed! 🎉",
@@ -187,6 +195,24 @@ export const LessonModal = ({ isOpen, onClose, lesson }: LessonModalProps) => {
   };
 
   const renderLessonStep = () => {
+    if (lessonWords.length === 0) {
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle>Lesson unavailable</CardTitle>
+            <CardDescription>
+              This lesson has no vocabulary content yet. Please try another lesson.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={onClose} className="w-full">
+              Close
+            </Button>
+          </CardContent>
+        </Card>
+      );
+    }
+
     if (showResults) {
       const percentage = Math.round((score / lessonWords.length) * 100);
       const isPassed = percentage >= 70;
